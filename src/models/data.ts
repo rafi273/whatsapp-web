@@ -10,10 +10,8 @@ import "dotenv/config";
 export function getProperty(): AxiosRequestConfig {
     return {
         headers: {
-            Authorization: `Bearer ${process.env.AUTHORIZATION}`,
-            "X-Lsn-Signature": "a2FydGluaUAyMDIy"
-        },
-        responseType: null
+            "X-Lsn-Signature": "YXVsaWFpbm92YXNpQGxzbjEyMw=="
+        }
     };
 }
 

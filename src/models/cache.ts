@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import redis from "../config/redis";
 import { AnswerData } from "answerData";
 import { Temp } from "temp";
+import redis from "../config/redis";
 
-export default async function(waId: string, update = false, level?: number, step?: number, answer?: boolean, data?: AnswerData, dataPrevious?: any, dateOfBirth?: string, name?: string, postalCodeId?: number, gender?: string, answerDetailId?: number, projectId?: number, email?: string, city?: string, urbanVillage?: string, province?: string, districts?: string, address?: string, userId?: number, messageId?: string[], postalCode?: number): Promise<Temp> {
-    const arr = await redis.get(waId);
+export default async function(chatId: string, update = false, level?: number, step?: number, answer?: boolean, data?: AnswerData, dataPrevious?: any[], dateOfBirth?: string, name?: string, postalCodeId?: number, gender?: string, answerDetailId?: number, projectId?: number, email?: string, city?: string, urbanVillage?: string, province?: string, districts?: string, address?: string, userId?: number, messageId?: string[], postalCode?: number): Promise<Temp> {
+    const arr = await redis.get(chatId);
     let temp: Temp = {
         level: 1,
         step: 0,
@@ -49,7 +49,7 @@ export default async function(waId: string, update = false, level?: number, step
     }
 
     if (dataPrevious) {
-        temp.dataPrevious.push(dataPrevious);
+        temp.dataPrevious = dataPrevious;
     }
 
     if (dateOfBirth) {
@@ -114,7 +114,7 @@ export default async function(waId: string, update = false, level?: number, step
 
     if (update) {
         try {
-            await redis.setex(waId, 600, JSON.stringify(temp));
+            await redis.setex(chatId, 600, JSON.stringify(temp));
         } catch (error) {
             console.error(error);
         }

@@ -2,6 +2,9 @@ import { Client, LocalAuth } from "whatsapp-web.js";
 import qrcode from "qrcode-terminal";
 import "dotenv/config";
 
+// Controllers (route handlers)
+import { bot } from "./controllers/bot";
+
 
 const client = new Client({
     puppeteer: {
@@ -37,8 +40,7 @@ client.on("ready", () => {
 });
 
 client.on("message", message => {
-    console.log(message.body);
-    message.reply(message.body);
+    bot(message);
 });
 
 client.on("disconnected", (reason) => {

@@ -1,21 +1,15 @@
-import axios from "axios";
 import { getProperty } from "./data";
+import axios from "axios";
+import WAWebJS from "whatsapp-web.js";
 import "dotenv/config";
 
-export async function sendMessage(to: string, text: string) {
-    const formData = new FormData();
-
-    formData.append("messageText", text);
-    return await axios.post(
-        `${process.env.WA_API_HOST}/api/v1/sendSessionMessage/${to}`,
-        formData,
-        getProperty()
-    );
+export function sendMessage(message: WAWebJS.Message, chatId: string, text: string) {
+    return message.reply(text, chatId);
 }
 
-export async function sendMultipleMessage(to: string, object: string[]) {
+export function sendMultipleMessage(message: WAWebJS.Message, chatId: string, object: string[]) {
     for (const iterator of object) {
-        await sendMessage(to, iterator);
+        sendMessage(message, chatId, iterator);
     }
 }
 
@@ -60,34 +54,4 @@ export async function sendListMessage(to: string, body: string, action: string[]
         },
         getProperty()
     );
-}
-
-export async function addContact(phone: string) {
-    return await axios.post(
-        `${process.env.WA_API_HOST}/api/v1/addContact/${phone}`,
-        {
-            name: phone,
-            customParams: [
-                {
-                    name: "member",
-                    value: "VIP"
-                }
-            ]
-        },
-        getProperty()
-    );
-}
-
-export async function getMedia(mediaId: string) {
-    const property = getProperty();
-    property.responseType = "arraybuffer";
-    const formData = new FormData();
-
-    formData.append("fileName", mediaId);
-    return await axios({
-        method: "get",
-        url: `${process.env.WA_API_HOST}/api/v1/getMedia`,
-        headers: property.headers,
-        data: formData
-    });
 }
