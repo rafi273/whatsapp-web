@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import redis from "../config/redis";
 import { AnswerData } from "answerData";
 import { Temp } from "temp";
-import redis from "../config/redis";
 
 export default async function(chatId: string, update = false, level?: number, step?: number, answer?: boolean, data?: AnswerData, dataPrevious?: any[], dateOfBirth?: string, name?: string, postalCodeId?: number, gender?: string, answerDetailId?: number, projectId?: number, email?: string, city?: string, urbanVillage?: string, province?: string, districts?: string, address?: string, userId?: number, messageId?: string[], postalCode?: number): Promise<Temp> {
     const arr = await redis.get(chatId);

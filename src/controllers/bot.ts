@@ -1,12 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import cache from "../models/cache";
+import redis from "../config/redis";
+import WAWebJS from "whatsapp-web.js";
 import { sendMessage, sendMultipleMessage, sendButtonMessage, sendListMessage } from "../models/message";
 import { getQuestionCache, searchIndex, insertAnswer, getQuestionData, getProject, getChatQuestion } from "../models/data";
 import { endMessage, textHandling } from "../utils/notification";
 import { AnswerData } from "answerData";
-import { AxiosError } from "axios";
-import cache from "../models/cache";
-import redis from "../config/redis";
-import WAWebJS from "whatsapp-web.js";
 import "dotenv/config";
 
 export async function bot(message: WAWebJS.Message, step: boolean = false): Promise<void> {
@@ -49,6 +48,11 @@ export async function bot(message: WAWebJS.Message, step: boolean = false): Prom
         //     }
 
         //     break;
+
+        case "location":
+            text = `${message.location.latitude};${message.location.longitude}`;
+
+            break;
 
         default:
             sendMultipleMessage(message, chatId, endMessage("Jenis pesan tidak didukung"));
@@ -107,6 +111,17 @@ export async function bot(message: WAWebJS.Message, step: boolean = false): Prom
                             return;
                         }
 
+                        break;
+
+                    case "location":
+                        if (message.type != "location") {
+                            temp.step = searchIndex(questionData, dataPrevious.question_id);
+    
+                            textHandling(message, chatId);
+                            await cache(chatId, true, temp.level, temp.step, temp.answer, answer, temp.dataPrevious, temp.dateOfBirth, temp.name, temp.postalCodeId, temp.gender, temp.answerDetailId, temp.projectId, temp.email, temp.city, temp.urbanVillage, temp.province, temp.districts, temp.address, temp.userId, temp.messageId, temp.postalCode);
+                            return;
+                        }
+    
                         break;
                 }
 
@@ -171,7 +186,7 @@ export async function bot(message: WAWebJS.Message, step: boolean = false): Prom
 
                     temp.step -= 1;
 
-                    await insertAnswer(chatId, answerData(data.question_id, text), temp).catch((error: AxiosError) => {
+                    await insertAnswer(chatId, answerData(data.question_id, text), temp).catch(error => {
                         throw new Error(JSON.stringify(error.toJSON()));
                     });
                 }
@@ -193,7 +208,7 @@ export async function bot(message: WAWebJS.Message, step: boolean = false): Prom
         }
 
         let choose: number[];
-        data.question = await getQuestionData(data, chatId, temp);
+        data.question = await getQuestionData(data, temp);
 
         if (data.question_redirect) {
             choose = JSON.parse(data.question_redirect);
@@ -205,12 +220,12 @@ export async function bot(message: WAWebJS.Message, step: boolean = false): Prom
 
         switch (data.question_type) {
             case "choice":
-                const questionChoice: string[] = data.question_choice;
+                const questionChoice: string[] = JSON.parse(data.question_choice);
 
                 if (questionChoice.length > 2) {
-                    sendListMessage(chatId, data.question, data.question_choice);
+                    sendListMessage(message, chatId, data.question, questionChoice);
                 } else {
-                    sendButtonMessage(chatId, data.question, data.question_choice);
+                    sendButtonMessage(message, chatId, data.question, questionChoice);
                 }
 
                 break;
@@ -243,6 +258,10 @@ export async function bot(message: WAWebJS.Message, step: boolean = false): Prom
                 temp.dataPrevious.push(data);
                 await cache(chatId, true, temp.level, temp.step, temp.answer, answer, temp.dataPrevious, temp.dateOfBirth, temp.name, temp.postalCodeId, temp.gender, temp.answerDetailId, temp.projectId, temp.email, temp.city, temp.urbanVillage, temp.province, temp.districts, temp.address, temp.userId, temp.messageId, temp.postalCode);
                 return;
+
+            case "location":
+                sendMessage(message, chatId, data.question);
+                break;
         }
 
         temp.dataPrevious.push(data);

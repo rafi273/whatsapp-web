@@ -4565,10 +4565,9 @@ webidl-conversions@^6.1.0:
   resolved "https://registry.yarnpkg.com/webidl-conversions/-/webidl-conversions-6.1.0.tgz#9111b4d7ea80acd40f5270d666621afa78b69514"
   integrity sha512-qBIvFLGiBpLjfwmYAaHPXsn+ho5xZnGvyGvsarywGNc8VyQJUMHJ8OBKGGrPER0okBeMDaan4mNBlgBROxuI8w==
 
-whatsapp-web.js@^1.18.4:
-  version "1.18.4"
-  resolved "https://registry.yarnpkg.com/whatsapp-web.js/-/whatsapp-web.js-1.18.4.tgz#f4904b4871af252da68142105e906522be0ace30"
-  integrity sha512-Dqu6Q37tDDAcVJ44aMdRE76sI/9rBCUG+NTz1Kxh2w4obX2WtpoRetilxqgx1r4+pFUl58Lf21wGOEwPZ1pT/A==
+"whatsapp-web.js@github:pedroslopez/whatsapp-web.js#fix-buttons-list":
+  version "1.18.3-alpha.0"
+  resolved "https://codeload.github.com/pedroslopez/whatsapp-web.js/tar.gz/c8fe80635afc6fba9913577a3097e8bf1f557a0b"
   dependencies:
     "@pedroslopez/moduleraid" "^5.0.2"
     fluent-ffmpeg "^2.1.2"

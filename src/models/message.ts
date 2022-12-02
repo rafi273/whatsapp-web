@@ -1,6 +1,4 @@
-import { getProperty } from "./data";
-import axios from "axios";
-import WAWebJS from "whatsapp-web.js";
+import WAWebJS, { Buttons, List } from "whatsapp-web.js";
 import "dotenv/config";
 
 export function sendMessage(message: WAWebJS.Message, chatId: string, text: string) {
@@ -13,26 +11,23 @@ export function sendMultipleMessage(message: WAWebJS.Message, chatId: string, ob
     }
 }
 
-export async function sendButtonMessage(to: string, body: string, action: string[]) {
+export async function sendButtonMessage(message: WAWebJS.Message, chatId: string, body: string, action: string[]) {
     const buttons = [];
 
-    for (const iterator of action) {
+    console.log(action);
+    for (let index = 0; index < action.length; index++) {
+        console.log(action[index]);
         buttons.push({
-            text: iterator
+            id: (index + 1).toString(),
+            body: action[index]
         });
     }
 
-    return await axios.post(
-        `${process.env.WA_API_HOST}/api/v1/sendInteractiveButtonsMessage?whatsappNumber=${to}`,
-        {
-            body: body,
-            buttons: buttons
-        },
-        getProperty()
-    );
+    console.log(buttons);
+    return message.reply(new Buttons(body, buttons), chatId);
 }
 
-export async function sendListMessage(to: string, body: string, action: string[]) {
+export async function sendListMessage(message: WAWebJS.Message, chatId: string, body: string, action: string[]) {
     const buttons = [];
 
     for (const iterator of action) {
@@ -41,17 +36,6 @@ export async function sendListMessage(to: string, body: string, action: string[]
         });
     }
 
-    return await axios.post(
-        `${process.env.WA_API_HOST}/api/v1/sendInteractiveListMessage?whatsappNumber=${to}`,
-        {
-            body: body,
-            buttonText: "Pilih",
-            sections: [
-                {
-                    rows: buttons
-                }
-            ]
-        },
-        getProperty()
-    );
+    console.log(buttons);
+    return message.reply(new List(body, "Pilih", buttons), chatId);
 }

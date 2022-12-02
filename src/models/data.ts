@@ -39,7 +39,7 @@ export async function getPostalCodeWithId(postalCodeId: number) {
     )).data.data;
 }
 
-export async function getQuestionData(data: any, waId: string, temp: Temp): Promise<string> {
+export async function getQuestionData(data: any, temp: Temp): Promise<string> {
     if (data.question.match(/--urban_village--/)) {
         data.question = data.question.replace(/--urban_village--/, temp.urbanVillage ?? "-");
     }
@@ -73,15 +73,20 @@ export async function getProject(): Promise<any[]> {
 
 export async function getChatQuestion(projectId: string): Promise<any[]> {
     return (await axios.get(
-        `${process.env.API_HOST}/v2/collection/chat/project/project_id=${projectId}&status=active`,
+        `${process.env.API_HOST}/question?project_id=${projectId}&status=active`,
         getProperty()
     )).data.data;
 }
 
 export async function insertAnswer(mobileNumber: string, answerData: AnswerData, temp: Temp) {
+    mobileNumber = mobileNumber.split("@")[0];
     let answerDetailData: any = [],
         method = "put",
         extend = "";
+
+    if (!temp.userId && temp.name) {
+        await insertCorrespondent(temp, mobileNumber);
+    }
 
     if (!temp.answerDetailId) {
         answerDetailData = {
@@ -95,6 +100,7 @@ export async function insertAnswer(mobileNumber: string, answerData: AnswerData,
             getProperty()
         )).data.data;
         extend = `/${answerDetailData.answer_detail_id}`;
+        answerDetailData.user_id = temp.userId;
     }
 
     const property = getProperty();

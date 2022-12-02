@@ -41,7 +41,7 @@
     "qrcode": "^1.5.1",
     "qrcode-terminal": "^0.12.0",
     "socket.io": "^4.5.4",
-    "whatsapp-web.js": "^1.18.4"
+    "whatsapp-web.js": "github:pedroslopez/whatsapp-web.js#fix-buttons-list"
   },
   "devDependencies": {
     "@types/axios": "^0.14.0",
