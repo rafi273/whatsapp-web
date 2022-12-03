@@ -225,11 +225,11 @@ export async function bot(client: Client, message: WAWebJS.Message): Promise<voi
             case "choice":
                 const questionChoice: string[] = JSON.parse(data.question_choice);
 
-                sendListMessage(client, chatId, data.question, questionChoice);
-                // if (questionChoice.length > 2) {
-                // } else {
-                //     sendButtonMessage(client, chatId, data.question, questionChoice);
-                // }
+                if (questionChoice.length > 2) {
+                    sendListMessage(client, chatId, data.question, questionChoice);
+                } else {
+                    sendButtonMessage(client, chatId, data.question, questionChoice);
+                }
 
                 break;
 
