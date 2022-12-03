@@ -61,26 +61,35 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js" crossorigin="anonymous"></script>
     <script>
-        $(document).ready(function () {
-            var socket = io();
+        let socket = new WebSocket("ws://localhost:3001");
 
-            socket.on('message', function (msg) {
-                $('.logs').prepend($('<li>').text(msg));
-            });
+        socket.onopen = (ev) => {
+            console.log(ev);
+        };
 
-            socket.on('qr', function (src) {
-                $('#qrcode').attr('src', src);
-                $('#qrcode').show();
-            });
-
-            socket.on('ready', function (data) {
-                $('#qrcode').hide();
-            });
-
-            socket.on('authenticated', function (data) {
-                $('#qrcode').hide();
-            });
+        socket.addEventListener("message", (ev) => {
+            $('.logs').prepend($('<li>').text(JSON.parse(ev.data).payload));
         });
+
+        socket.addEventListener("qr", (ev) => {
+            console.log(ev);
+            // $('.logs').prepend($('<li>').text(ev.data));
+        });
+
+        // $(document).ready(function () {
+        //     socket.on('qr', function (src) {
+        //         $('#qrcode').attr('src', src);
+        //         $('#qrcode').show();
+        //     });
+
+        //     socket.on('ready', function (data) {
+        //         $('#qrcode').hide();
+        //     });
+
+        //     socket.on('authenticated', function (data) {
+        //         $('#qrcode').hide();
+        //     });
+        // });
     </script>
 </body>
 

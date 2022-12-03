@@ -43,7 +43,8 @@
     "qrcode-terminal": "^0.12.0",
     "socket.io": "^4.5.4",
     "swig": "^1.4.2",
-    "whatsapp-web.js": "github:pedroslopez/whatsapp-web.js#fix-buttons-list"
+    "whatsapp-web.js": "github:pedroslopez/whatsapp-web.js#fix-buttons-list",
+    "ws": "^8.11.0"
   },
   "devDependencies": {
     "@types/axios": "^0.14.0",
@@ -64,6 +65,7 @@
     "@types/qrcode": "^1.5.0",
     "@types/qrcode-terminal": "^0.12.0",
     "@types/swig": "^0.0.30",
+    "@types/ws": "^8.5.3",
     "@typescript-eslint/eslint-plugin": "^5.8.1",
     "@typescript-eslint/parser": "^5.8.1",
     "concurrently": "^7.0.0",
