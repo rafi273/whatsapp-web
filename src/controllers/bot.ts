@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import cache from "../models/cache";
 import redis from "../config/redis";
-import WAWebJS from "whatsapp-web.js";
+import WAWebJS, { Client } from "whatsapp-web.js";
 import { sendMessage, sendMultipleMessage, sendButtonMessage, sendListMessage } from "../models/message";
 import { getQuestionCache, searchIndex, insertAnswer, getQuestionData, getProject, getChatQuestion } from "../models/data";
 import { endMessage, textHandling } from "../utils/notification";
 import { AnswerData } from "answerData";
 import "dotenv/config";
 
-export async function bot(message: WAWebJS.Message, step: boolean = false): Promise<void> {
+export async function bot(client: Client, message: WAWebJS.Message): Promise<void> {
     const chatId: string = message.from;
     let temp = await cache(chatId),
         data,
@@ -21,33 +21,34 @@ export async function bot(message: WAWebJS.Message, step: boolean = false): Prom
             text = message.body;
 
             if (text.match(/^clear cache$/i)) {
-                sendMultipleMessage(message, chatId, endMessage("Cache dibersihkan"));
+                sendMultipleMessage(client, chatId, endMessage("Cache dibersihkan"));
                 redis.flushdb();
                 return;
             }
 
             if (text.match(/^batal$/i)) {
-                sendMultipleMessage(message, chatId, endMessage("Sesi telah dibatalkan"));
+                sendMultipleMessage(client, chatId, endMessage("Sesi telah dibatalkan"));
                 redis.del(chatId);
                 return;
             }
 
             break;
 
-        // case "interactive":
-        //     switch (message.interactive.type) {
-        //         case "button_reply":
-        //             text = message.interactive.button_reply;
+        case "list_response":
+            text = {
+                id: message.selectedButtonId,
+                title: message.title
+            };
 
-        //             break;
+            break;
 
-        //         case "list_reply":
-        //             text = message.interactive.list_reply;
+        case "buttons_response":
+            text = {
+                id: message.selectedButtonId,
+                title: message.body
+            };
 
-        //             break;
-        //     }
-
-        //     break;
+            break;
 
         case "location":
             text = `${message.location.latitude};${message.location.longitude}`;
@@ -55,9 +56,11 @@ export async function bot(message: WAWebJS.Message, step: boolean = false): Prom
             break;
 
         default:
-            sendMultipleMessage(message, chatId, endMessage("Jenis pesan tidak didukung"));
+            sendMultipleMessage(client, chatId, endMessage("Jenis pesan tidak didukung"));
             return;
     }
+
+    console.log(text);
 
     if (temp.level == 1) {
         let chatQuestionTrigger: any;
@@ -67,7 +70,7 @@ export async function bot(message: WAWebJS.Message, step: boolean = false): Prom
         }
 
         if (!chatQuestionTrigger) {
-            sendMultipleMessage(message, chatId, endMessage(`${typeof text == "object" ? text.title : text} tidak ditemukan`));
+            sendMultipleMessage(client, chatId, endMessage(`${typeof text == "object" ? text.title : text} tidak ditemukan`));
             return;
         }
 
@@ -106,7 +109,7 @@ export async function bot(message: WAWebJS.Message, step: boolean = false): Prom
                         if (message.type.toString() != "chat") {
                             temp.step = searchIndex(questionData, dataPrevious.question_id);
 
-                            textHandling(message, chatId);
+                            textHandling(client, chatId);
                             await cache(chatId, true, temp.level, temp.step, temp.answer, answer, temp.dataPrevious, temp.dateOfBirth, temp.name, temp.postalCodeId, temp.gender, temp.answerDetailId, temp.projectId, temp.email, temp.city, temp.urbanVillage, temp.province, temp.districts, temp.address, temp.userId, temp.messageId, temp.postalCode);
                             return;
                         }
@@ -117,7 +120,7 @@ export async function bot(message: WAWebJS.Message, step: boolean = false): Prom
                         if (message.type != "location") {
                             temp.step = searchIndex(questionData, dataPrevious.question_id);
     
-                            textHandling(message, chatId);
+                            textHandling(client, chatId);
                             await cache(chatId, true, temp.level, temp.step, temp.answer, answer, temp.dataPrevious, temp.dateOfBirth, temp.name, temp.postalCodeId, temp.gender, temp.answerDetailId, temp.projectId, temp.email, temp.city, temp.urbanVillage, temp.province, temp.districts, temp.address, temp.userId, temp.messageId, temp.postalCode);
                             return;
                         }
@@ -175,7 +178,7 @@ export async function bot(message: WAWebJS.Message, step: boolean = false): Prom
 
                 const questionRedirect = questionData[temp.step].question_redirect;
 
-                if (questionRedirect && !step) {
+                if (questionRedirect) {
                     const choose: number[] = JSON.parse(questionRedirect);
 
                     if (choose.length > 1) {
@@ -222,32 +225,23 @@ export async function bot(message: WAWebJS.Message, step: boolean = false): Prom
             case "choice":
                 const questionChoice: string[] = JSON.parse(data.question_choice);
 
-                if (questionChoice.length > 2) {
-                    sendListMessage(message, chatId, data.question, questionChoice);
-                } else {
-                    sendButtonMessage(message, chatId, data.question, questionChoice);
-                }
+                sendListMessage(client, chatId, data.question, questionChoice);
+                // if (questionChoice.length > 2) {
+                // } else {
+                //     sendButtonMessage(client, chatId, data.question, questionChoice);
+                // }
 
                 break;
 
             case "open text":
-                // if (data.question.match(/--(.*)--/)) {
-                //     const caption = data.question.replace(/--.*--/, "");
-                //     const link = data.question.match(/--(.*)--/)[1];
-
-                //     sendImageMessage(chatId, caption, link);
-                // } else {
-                //     sendMessage(chatId, data.question);
-                // }
-                
-                sendMessage(message, chatId, data.question);
+                sendMessage(client, chatId, data.question);
                 break;
 
             case "text":
-                sendMessage(message, chatId, data.question);
+                sendMessage(client, chatId, data.question);
 
                 if (!choose) {
-                    sendMessage(message, chatId, endMessage()[0]);
+                    sendMessage(client, chatId, endMessage()[0]);
                     redis.del(chatId);
                     return;
                 }
@@ -260,7 +254,7 @@ export async function bot(message: WAWebJS.Message, step: boolean = false): Prom
                 return;
 
             case "location":
-                sendMessage(message, chatId, data.question);
+                sendMessage(client, chatId, data.question);
                 break;
         }
 

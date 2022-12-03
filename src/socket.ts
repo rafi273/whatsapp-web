@@ -40,7 +40,7 @@ client.on("ready", () => {
 });
 
 client.on("message", message => {
-    bot(message);
+    bot(client, message);
 });
 
 client.on("disconnected", (reason) => {
