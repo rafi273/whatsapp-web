@@ -3,7 +3,7 @@ import { Buttons, Client, List } from "whatsapp-web.js";
 import "dotenv/config";
 
 export function sendMessage(client: Client,  chatId: string, text: string) {
-    return client.sendMessage(chatId, text);
+    return client.sendMessage(chatId, text.substring(0, 1024));
 }
 
 export function sendMultipleMessage(client: Client, chatId: string, object: string[]) {
@@ -18,14 +18,15 @@ export function sendButtonMessage(client: Client, chatId: string, body: string, 
     for (let index = 0; index < action.length; index++) {
         buttons.push({
             id: (index + 1).toString(),
-            body: action[index]
+            body: action[index].substring(0, 20)
         });
     }
 
-    return client.sendMessage(chatId, new Buttons(body, buttons));
+    return client.sendMessage(chatId, new Buttons(body.substring(0, 1024), buttons));
 }
 
 export function sendListMessage(client: Client, chatId: string, body: string, action: string[]) {
+    const length = action.length;
     const sections = [
         {
             title: "Pilih",
@@ -33,12 +34,12 @@ export function sendListMessage(client: Client, chatId: string, body: string, ac
         }
     ];
 
-    for (let index = 0; index < action.length; index++) {
+    for (let index = 0; index < (length > 10 ? 10 : length); index++) {
         sections[0].rows.push({
             id: (index + 1).toString(),
-            title: action[index]
+            title: action[index].substring(0, 24)
         });
     }
 
-    return client.sendMessage(chatId, new List(body, "Pilih", sections));
+    return client.sendMessage(chatId, new List(body.substring(0, 1024), "Pilih", sections));
 }

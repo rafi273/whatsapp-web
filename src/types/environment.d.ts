@@ -6,7 +6,6 @@ declare global {
             REDIS_PORT: string;
             API_HOST: string;
             REDIS_HOST: string;
-            KEY: string;
         }
     }
 }

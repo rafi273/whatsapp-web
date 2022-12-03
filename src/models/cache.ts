@@ -3,14 +3,14 @@ import redis from "../config/redis";
 import { AnswerData } from "answerData";
 import { Temp } from "temp";
 
-export default async function(chatId: string, update = false, level?: number, step?: number, answer?: boolean, data?: AnswerData, dataPrevious?: any[], dateOfBirth?: string, name?: string, postalCodeId?: number, gender?: string, answerDetailId?: number, projectId?: number, email?: string, city?: string, urbanVillage?: string, province?: string, districts?: string, address?: string, userId?: number, messageId?: string[], postalCode?: number): Promise<Temp> {
+export default async function(chatId: string, update = false, level?: number, step?: number, answer?: boolean, data?: AnswerData, previousData?: any[], dateOfBirth?: string, name?: string, postalCodeId?: number, gender?: string, answerDetailId?: number, projectId?: number, email?: string, city?: string, urbanVillage?: string, province?: string, districts?: string, address?: string, userId?: number, messageId?: string[], postalCode?: number, provinceData?: string[], cityData?: string[], districtsData?: string[], urbanVillageData?: string[]): Promise<Temp> {
     const arr = await redis.get(chatId);
     let temp: Temp = {
         level: 1,
         step: 0,
         answer: false,
         data: [],
-        dataPrevious: [],
+        previousData: [],
         dateOfBirth: null,
         name: null,
         postalCodeId: null,
@@ -25,7 +25,11 @@ export default async function(chatId: string, update = false, level?: number, st
         address: null,
         userId: null,
         messageId: [],
-        postalCode: null
+        postalCode: null,
+        provinceData: [],
+        cityData: [],
+        districtsData: [],
+        urbanVillageData: []
     };
 
     if (arr) {
@@ -48,8 +52,8 @@ export default async function(chatId: string, update = false, level?: number, st
         temp.data.push(data);
     }
 
-    if (dataPrevious) {
-        temp.dataPrevious = dataPrevious;
+    if (previousData) {
+        temp.previousData = previousData;
     }
 
     if (dateOfBirth) {
@@ -110,6 +114,22 @@ export default async function(chatId: string, update = false, level?: number, st
 
     if (postalCode) {
         temp.postalCode = postalCode;
+    }
+
+    if (provinceData) {
+        temp.provinceData = provinceData;
+    }
+
+    if (cityData) {
+        temp.cityData = cityData;
+    }
+
+    if (districtsData) {
+        temp.districtsData = districtsData;
+    }
+
+    if (urbanVillageData) {
+        temp.urbanVillageData = urbanVillageData;
     }
 
     if (update) {

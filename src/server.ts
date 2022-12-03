@@ -1,6 +1,6 @@
 import errorHandler from "errorhandler";
 import http from "http";
-import socket from "socket.io";
+import socketIo from "socket.io";
 import app from "./app";
 import client from "./socket";
 import "dotenv/config";
@@ -17,6 +17,15 @@ if (process.env.NODE_ENV === "development") {
 /**
  * Start Express server.
  */
+const serv = http.createServer(app);
+const io = socketIo(serv);
+
+client.initialize();
+io.on("connection", function(socket) {
+    console.log("Connecting...");
+    socket.emit("message", "Connecting..."); 
+});
+
 const server = app.listen(app.get("port"), () => {
     console.log(
         "  App is running at http://localhost:%d in %s mode",
@@ -25,11 +34,5 @@ const server = app.listen(app.get("port"), () => {
     );
     console.log("  Press CTRL-C to stop\n");
 });
-const io = new socket.Server(http.createServer(app));
-
-io.on("connection", function(socket) {
-    socket.emit("message", "Connecting..."); 
-});
-client.initialize();
 
 export default server;

@@ -5,7 +5,6 @@ import "dotenv/config";
 // Controllers (route handlers)
 import { bot } from "./controllers/bot";
 
-
 const client = new Client({
     puppeteer: {
         headless: true,
