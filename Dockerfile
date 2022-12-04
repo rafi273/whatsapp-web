@@ -4,7 +4,7 @@ WORKDIR /var/www/whatsapp-web
 
 COPY . .
 
-RUN chmod 777 .wwebjs_auth/* && \
+RUN chmod 777 * && \
     yarn && \
     yarn run build
 
