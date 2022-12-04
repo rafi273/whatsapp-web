@@ -3,7 +3,7 @@ export interface Temp {
     step: number;
     answer: boolean;
     data: any[];
-    dataPrevious: any[];
+    previousData: any[];
     dateOfBirth: string;
     name: string;
     postalCodeId: number;
@@ -19,6 +19,10 @@ export interface Temp {
     userId: number;
     messageId: string[];
     postalCode: number;
+    provinceData: string[];
+    cityData: string[];
+    districtsData: string[];
+    urbanVillageData: string[];
 }
 
 declare module "Temp";

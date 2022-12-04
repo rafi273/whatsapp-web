@@ -10,10 +10,8 @@ import "dotenv/config";
 export function getProperty(): AxiosRequestConfig {
     return {
         headers: {
-            Authorization: `Bearer ${process.env.AUTHORIZATION}`,
-            "X-Lsn-Signature": "a2FydGluaUAyMDIy"
-        },
-        responseType: null
+            "X-Lsn-Signature": "YXVsaWFpbm92YXNpQGxzbjEyMw=="
+        }
     };
 }
 
@@ -34,30 +32,40 @@ export async function getPostalCode(postalCode = "", urbanVillage = "", district
     )).data.data;
 }
 
-export async function getPostalCodeWithId(postalCodeId: number) {
+export async function getProvince(query?: string) {
     return (await axios.get(
-        `${process.env.API_HOST}/postalCode/${postalCodeId}`,
+        `${process.env.API_HOST}/v2/collection/postalCode/province?query=${query}`,
         getProperty()
     )).data.data;
 }
 
-export async function getQuestionData(data: any, waId: string, temp: Temp): Promise<string> {
-    if (data.question.match(/--urban_village--/)) {
-        data.question = data.question.replace(/--urban_village--/, temp.urbanVillage ?? "-");
-    }
+export async function getCity(query?: string, province? :string) {
+    return (await axios.get(
+        `${process.env.API_HOST}/v2/collection/postalCode/city?query=${query}&province=${province}`,
+        getProperty()
+    )).data.data;
+}
 
-    if (data.question.match(/--districts--/)) {
-        data.question = data.question.replace(/--districts--/, temp.districts ?? "-");
-    }
+export async function getDistricts(query?: string, city? :string) {
+    return (await axios.get(
+        `${process.env.API_HOST}/v2/collection/postalCode/districts?query=${query}&city=${city}`,
+        getProperty()
+    )).data.data;
+}
 
-    if (data.question.match(/--city--/)) {
-        data.question = data.question.replace(/--city--/, temp.city ?? "-");
-    }
+export async function getUrbanVillage(query?: string, districts? :string) {
+    return (await axios.get(
+        `${process.env.API_HOST}/v2/collection/postalCode/urbanVillage?query=${query}&districts=${districts}`,
+        getProperty()
+    )).data.data;
+}
 
-    if (data.question.match(/--province--/)) {
-        data.question = data.question.replace(/--province--/, temp.province, temp.districts ?? "-");
-    }
-
+export async function getQuestionData(data: any, temp: Temp): Promise<string> {
+    data.question = data.question.replace(/--urban_village--/g, temp.urbanVillage ?? "-");
+    data.question = data.question.replace(/--districts--/g, temp.districts ?? "-");
+    data.question = data.question.replace(/--city--/g, temp.city ?? "-");
+    data.question = data.question.replace(/--province--/g, temp.province ?? "-");
+    data.question = data.question.replace(/--postal_code--/g, temp.postalCode ?? "-");
     data.question = data.question.replace(/--name--/g, temp.name ?? "-");
     data.question = data.question.replace(/--gender--/g, temp.gender ?? "-");
     data.question = data.question.replace(/--date_of_birth--/g, temp.dateOfBirth ?? "-");
@@ -75,12 +83,13 @@ export async function getProject(): Promise<any[]> {
 
 export async function getChatQuestion(projectId: string): Promise<any[]> {
     return (await axios.get(
-        `${process.env.API_HOST}/v2/collection/chat/project/project_id=${projectId}&status=active`,
+        `${process.env.API_HOST}/question?project_id=${projectId}&status=active`,
         getProperty()
     )).data.data;
 }
 
 export async function insertAnswer(mobileNumber: string, answerData: AnswerData, temp: Temp) {
+    mobileNumber = mobileNumber.split("@")[0];
     let answerDetailData: any = [],
         method = "put",
         extend = "";
@@ -97,6 +106,7 @@ export async function insertAnswer(mobileNumber: string, answerData: AnswerData,
             getProperty()
         )).data.data;
         extend = `/${answerDetailData.answer_detail_id}`;
+        answerDetailData.user_id = temp.userId;
     }
 
     const property = getProperty();
@@ -114,7 +124,7 @@ export async function insertAnswer(mobileNumber: string, answerData: AnswerData,
     if (method == "post") {
         temp.answerDetailId = answerDetailUpload.data.data.id;
 
-        await cache(mobileNumber, true, temp.level, temp.step, temp.answer, null, temp.dataPrevious, temp.dateOfBirth, temp.name, temp.postalCodeId, temp.gender, temp.answerDetailId, temp.projectId, temp.email, temp.city, temp.urbanVillage, temp.province, temp.districts, temp.address, temp.userId, temp.messageId, temp.postalCode);
+        await cache(mobileNumber, true, temp.level, temp.step, temp.answer, null, temp.previousData, temp.dateOfBirth, temp.name, temp.postalCodeId, temp.gender, temp.answerDetailId, temp.projectId, temp.email, temp.city, temp.urbanVillage, temp.province, temp.districts, temp.address, temp.userId, temp.messageId, temp.postalCode, temp.provinceData, temp.cityData, temp.districtsData, temp.urbanVillageData);
     }
 
     return await axios.post(
@@ -153,7 +163,7 @@ export async function insertCorrespondent(temp: Temp, mobileNumber: string) {
         temp.userId = userPost.data.id;
     }
 
-    await cache(mobileNumber, true, temp.level, temp.step, temp.answer, null, temp.dataPrevious, temp.dateOfBirth, temp.name, temp.postalCodeId, temp.gender, temp.answerDetailId, temp.projectId, temp.email, temp.city, temp.urbanVillage, temp.province, temp.districts, temp.address, temp.userId, temp.messageId, temp.postalCode);
+    await cache(mobileNumber, true, temp.level, temp.step, temp.answer, null, temp.previousData, temp.dateOfBirth, temp.name, temp.postalCodeId, temp.gender, temp.answerDetailId, temp.projectId, temp.email, temp.city, temp.urbanVillage, temp.province, temp.districts, temp.address, temp.userId, temp.messageId, temp.postalCode, temp.provinceData, temp.cityData, temp.districtsData, temp.urbanVillageData);
 }
 
 export function searchIndex(question: any[], questionId: number) {

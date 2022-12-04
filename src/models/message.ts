@@ -1,93 +1,45 @@
-import axios from "axios";
-import { getProperty } from "./data";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Buttons, Client, List } from "whatsapp-web.js";
 import "dotenv/config";
 
-export async function sendMessage(to: string, text: string) {
-    const formData = new FormData();
-
-    formData.append("messageText", text);
-    return await axios.post(
-        `${process.env.WA_API_HOST}/api/v1/sendSessionMessage/${to}`,
-        formData,
-        getProperty()
-    );
+export function sendMessage(client: Client,  chatId: string, text: string) {
+    return client.sendMessage(chatId, text.substring(0, 1024));
 }
 
-export async function sendMultipleMessage(to: string, object: string[]) {
+export function sendMultipleMessage(client: Client, chatId: string, object: string[]) {
     for (const iterator of object) {
-        await sendMessage(to, iterator);
+        sendMessage(client, chatId, iterator);
     }
 }
 
-export async function sendButtonMessage(to: string, body: string, action: string[]) {
+export function sendButtonMessage(client: Client, chatId: string, body: string, action: string[]) {
     const buttons = [];
 
-    for (const iterator of action) {
+    for (let index = 0; index < action.length; index++) {
         buttons.push({
-            text: iterator
+            id: (index + 1).toString(),
+            body: action[index].substring(0, 20)
         });
     }
 
-    return await axios.post(
-        `${process.env.WA_API_HOST}/api/v1/sendInteractiveButtonsMessage?whatsappNumber=${to}`,
-        {
-            body: body,
-            buttons: buttons
-        },
-        getProperty()
-    );
+    return client.sendMessage(chatId, new Buttons(body.substring(0, 1024), buttons));
 }
 
-export async function sendListMessage(to: string, body: string, action: string[]) {
-    const buttons = [];
+export function sendListMessage(client: Client, chatId: string, body: string, action: string[]) {
+    const length = action.length;
+    const sections = [
+        {
+            title: "Pilih",
+            rows: [] as any[]
+        }
+    ];
 
-    for (const iterator of action) {
-        buttons.push({
-            title: iterator
+    for (let index = 0; index < (length > 10 ? 10 : length); index++) {
+        sections[0].rows.push({
+            id: (index + 1).toString(),
+            title: action[index].substring(0, 24)
         });
     }
 
-    return await axios.post(
-        `${process.env.WA_API_HOST}/api/v1/sendInteractiveListMessage?whatsappNumber=${to}`,
-        {
-            body: body,
-            buttonText: "Pilih",
-            sections: [
-                {
-                    rows: buttons
-                }
-            ]
-        },
-        getProperty()
-    );
-}
-
-export async function addContact(phone: string) {
-    return await axios.post(
-        `${process.env.WA_API_HOST}/api/v1/addContact/${phone}`,
-        {
-            name: phone,
-            customParams: [
-                {
-                    name: "member",
-                    value: "VIP"
-                }
-            ]
-        },
-        getProperty()
-    );
-}
-
-export async function getMedia(mediaId: string) {
-    const property = getProperty();
-    property.responseType = "arraybuffer";
-    const formData = new FormData();
-
-    formData.append("fileName", mediaId);
-    return await axios({
-        method: "get",
-        url: `${process.env.WA_API_HOST}/api/v1/getMedia`,
-        headers: property.headers,
-        data: formData
-    });
+    return client.sendMessage(chatId, new List(body.substring(0, 1024), "Pilih", sections));
 }

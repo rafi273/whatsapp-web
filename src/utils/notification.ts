@@ -1,7 +1,8 @@
+import { Client } from "whatsapp-web.js";
 import { sendMessage } from "../models/message";
 
-export async function textHandling(waId: string) {
-    await sendMessage(waId, "Mohon hanya pilih jawaban yang tersedia");
+export function textHandling(client: Client, chatId:string) {
+    sendMessage(client, chatId, "Mohon hanya pilih jawaban yang tersedia");
 }
 
 export function endMessage(message?: string): string[] {

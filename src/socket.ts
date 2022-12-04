@@ -1,7 +1,11 @@
+import qrcode from "qrcode";
+import ws from "ws";
 import { Client, LocalAuth } from "whatsapp-web.js";
-import qrcode from "qrcode-terminal";
+import * as Sentry from "@sentry/node";
 import "dotenv/config";
 
+// Controllers (route handlers)
+import { bot } from "./controllers/bot";
 
 const client = new Client({
     puppeteer: {
@@ -16,33 +20,62 @@ const client = new Client({
     },
     authStrategy: new LocalAuth()
 });
-
-client.on("loading_screen", (percent, message) => {
-    console.log("LOADING SCREEN", percent, message);
+const io = new ws.WebSocketServer({
+    port: parseInt(process.env.REDIS_PORT) || 3001
 });
 
-client.on("qr", (qr) => {
-    // NOTE: This event will not be fired if a session is specified.
-    console.log("QR RECEIVED", qr);
-    qrcode.generate(qr, {small: true});
+Sentry.init({ dsn: "https://02b54883ded741a89eb25c8769343f13@o971121.ingest.sentry.io/4504268372574208" });
+client.initialize();
+
+io.on("connection", function(socket) {
+    socket.send(template(MESSAGE, "Connecting...")); 
+
+    client.on("qr", (qr) => {
+        qrcode.toDataURL(qr, (err, url) => {
+            socket.send(template(QR, url));
+            socket.send(template(MESSAGE, "QR Code received, scan please!"));
+        });
+    });
+
+    client.on("ready", () => {
+        socket.send(template(READY, "Whatsapp is ready!"));
+        socket.send(template(MESSAGE, "Whatsapp is ready!"));
+    });
+    
+    client.on("authenticated", () => {
+        socket.send(template(AUTHENTICATED, "Whatsapp is authenticated!"));
+        socket.send(template(MESSAGE, "Whatsapp is authenticated!"));
+    });
+
+    client.on("auth_failure", () => {
+        socket.send(template(MESSAGE, "Auth failure, restarting..."));
+    });
+
+    client.on("disconnected", () => {
+        socket.send(template(MESSAGE, "Whatsapp is disconnected!"));
+        client.destroy();
+        client.initialize();
+    });
 });
 
-client.on("auth_failure", message => {
-    // Fired if session restore was unsuccessful
-    console.error("AUTHENTICATION FAILURE", message);
-});
+const AUTHENTICATED = "authenticated";
+const MESSAGE = "message";
+const READY = "ready";
+const QR = "qr";
 
-client.on("ready", () => {
-    console.log("Client is ready!");
-});
+function template(event: string, message: string) {
+    return JSON.stringify({
+        event: event,
+        payload: message
+    });
+}
 
 client.on("message", message => {
-    console.log(message.body);
-    message.reply(message.body);
-});
-
-client.on("disconnected", (reason) => {
-    console.log("Client was logged out", reason);
+    try {
+        bot(client, message);
+    } catch (error) {
+        Sentry.captureException(error);
+    }
 });
 
 export default client;

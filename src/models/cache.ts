@@ -3,14 +3,14 @@ import redis from "../config/redis";
 import { AnswerData } from "answerData";
 import { Temp } from "temp";
 
-export default async function(waId: string, update = false, level?: number, step?: number, answer?: boolean, data?: AnswerData, dataPrevious?: any, dateOfBirth?: string, name?: string, postalCodeId?: number, gender?: string, answerDetailId?: number, projectId?: number, email?: string, city?: string, urbanVillage?: string, province?: string, districts?: string, address?: string, userId?: number, messageId?: string[], postalCode?: number): Promise<Temp> {
-    const arr = await redis.get(waId);
+export default async function(chatId: string, update = false, level?: number, step?: number, answer?: boolean, data?: AnswerData, previousData?: any[], dateOfBirth?: string, name?: string, postalCodeId?: number, gender?: string, answerDetailId?: number, projectId?: number, email?: string, city?: string, urbanVillage?: string, province?: string, districts?: string, address?: string, userId?: number, messageId?: string[], postalCode?: number, provinceData?: string[], cityData?: string[], districtsData?: string[], urbanVillageData?: string[]): Promise<Temp> {
+    const arr = await redis.get(chatId);
     let temp: Temp = {
         level: 1,
         step: 0,
         answer: false,
         data: [],
-        dataPrevious: [],
+        previousData: [],
         dateOfBirth: null,
         name: null,
         postalCodeId: null,
@@ -25,7 +25,11 @@ export default async function(waId: string, update = false, level?: number, step
         address: null,
         userId: null,
         messageId: [],
-        postalCode: null
+        postalCode: null,
+        provinceData: [],
+        cityData: [],
+        districtsData: [],
+        urbanVillageData: []
     };
 
     if (arr) {
@@ -48,8 +52,8 @@ export default async function(waId: string, update = false, level?: number, step
         temp.data.push(data);
     }
 
-    if (dataPrevious) {
-        temp.dataPrevious.push(dataPrevious);
+    if (previousData) {
+        temp.previousData = previousData;
     }
 
     if (dateOfBirth) {
@@ -112,9 +116,25 @@ export default async function(waId: string, update = false, level?: number, step
         temp.postalCode = postalCode;
     }
 
+    if (provinceData) {
+        temp.provinceData = provinceData;
+    }
+
+    if (cityData) {
+        temp.cityData = cityData;
+    }
+
+    if (districtsData) {
+        temp.districtsData = districtsData;
+    }
+
+    if (urbanVillageData) {
+        temp.urbanVillageData = urbanVillageData;
+    }
+
     if (update) {
         try {
-            await redis.setex(waId, 600, JSON.stringify(temp));
+            await redis.setex(chatId, 600, JSON.stringify(temp));
         } catch (error) {
             console.error(error);
         }
