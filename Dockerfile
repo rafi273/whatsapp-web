@@ -16,8 +16,7 @@ RUN apt-get update \
 RUN chmod 777 * && \
     yarn && \
     yarn run build
-
-USER pptruser
+    
 
 CMD ["google-chrome-stable"]
 CMD ["yarn", "start"]
