@@ -15,12 +15,7 @@ RUN apt-get update \
 
 RUN chmod 777 * && \
     yarn && \
-    yarn run build && \
-    groupadd -r pptruser && useradd -r -g pptruser -G audio,video pptruser && \
-    mkdir -p /home/pptruser/Downloads && \
-    chown -R pptruser:pptruser /home/pptruser && \
-    chown -R pptruser:pptruser /node_modules && \
-    chown -R pptruser:pptruser /package.json
+    yarn run build
 
 USER pptruser
 
