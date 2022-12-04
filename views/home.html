@@ -61,7 +61,7 @@
         integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
     <script>
         $(document).ready(function () {
-            const socket = new WebSocket("ws://172.104.167.25:6898");
+            const socket = new WebSocket("ws://172.105.120.63:6898");
             socket.onmessage = (ev) => {
                 const data = JSON.parse(ev.data);
                 const payload = data.payload;
