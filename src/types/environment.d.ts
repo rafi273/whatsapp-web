@@ -4,8 +4,8 @@ declare global {
             NODE_ENV: string;
             PORT: string;
             REDIS_PORT: string;
-            API_HOST: string;
             SOCKET_PORT: string;
+            API_HOST: string;
             REDIS_HOST: string;
         }
     }

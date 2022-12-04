@@ -21,7 +21,7 @@ const client = new Client({
     authStrategy: new LocalAuth()
 });
 const io = new ws.WebSocketServer({
-    port: parseInt(process.env.REDIS_PORT) || 3001
+    port: parseInt(process.env.SOCKET_PORT) || 3001
 });
 
 Sentry.init({ dsn: "https://02b54883ded741a89eb25c8769343f13@o971121.ingest.sentry.io/4504268372574208" });
