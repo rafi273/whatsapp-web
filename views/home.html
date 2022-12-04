@@ -63,9 +63,6 @@
 
         $(document).ready(function () {
             const socket = new WebSocket("ws://localhost:3001");
-            socket.onopen = (ev) => {
-                console.log(ev);
-            };
             socket.onmessage = (ev) => {
                 const data = JSON.parse(ev.data);
                 const payload = data.payload;
@@ -89,19 +86,6 @@
                         break;
                 }
             };
-
-            // socket.on('qr', function (src) {
-            //     $('#qrcode').attr('src', src);
-            //     $('#qrcode').show();
-            // });
-
-            // socket.on('ready', function (data) {
-            //     $('#qrcode').hide();
-            // });
-
-            // socket.on('authenticated', function (data) {
-            //     $('#qrcode').hide();
-            // });
         });
     </script>
 </body>
