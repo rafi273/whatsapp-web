@@ -1,7 +1,7 @@
-import { Client, LocalAuth } from "whatsapp-web.js";
-import qrcodeTerminal from "qrcode-terminal";
 import qrcode from "qrcode";
 import ws from "ws";
+import { Client, LocalAuth } from "whatsapp-web.js";
+import * as Sentry from "@sentry/node";
 import "dotenv/config";
 
 // Controllers (route handlers)
@@ -21,43 +21,47 @@ const client = new Client({
     authStrategy: new LocalAuth()
 });
 const io = new ws.WebSocketServer({
-    port: 3001
+    port: parseInt(process.env.REDIS_PORT) || 3001
 });
 
+Sentry.init({ dsn: "https://02b54883ded741a89eb25c8769343f13@o971121.ingest.sentry.io/4504268372574208" });
 client.initialize();
 
 io.on("connection", function(socket) {
-    socket.send(template(notification, "Connecting...")); 
+    socket.send(template(MESSAGE, "Connecting...")); 
 
     client.on("qr", (qr) => {
         qrcode.toDataURL(qr, (err, url) => {
-            socket.emit("qr", url);
-            socket.emit("message", "QR Code received, scan please!");
+            socket.send(template(QR, url));
+            socket.send(template(MESSAGE, "QR Code received, scan please!"));
         });
     });
 
     client.on("ready", () => {
-        socket.emit("ready", "Whatsapp is ready!");
-        socket.emit("message", "Whatsapp is ready!");
+        socket.send(template(READY, "Whatsapp is ready!"));
+        socket.send(template(MESSAGE, "Whatsapp is ready!"));
     });
     
     client.on("authenticated", () => {
-        socket.emit("authenticated", "Whatsapp is authenticated!");
-        socket.emit("message", "Whatsapp is authenticated!");
+        socket.send(template(AUTHENTICATED, "Whatsapp is authenticated!"));
+        socket.send(template(MESSAGE, "Whatsapp is authenticated!"));
     });
 
     client.on("auth_failure", () => {
-        socket.emit("message", "Auth failure, restarting...");
+        socket.send(template(MESSAGE, "Auth failure, restarting..."));
     });
 
     client.on("disconnected", () => {
-        socket.emit("message", "Whatsapp is disconnected!");
+        socket.send(template(MESSAGE, "Whatsapp is disconnected!"));
         client.destroy();
         client.initialize();
     });
 });
 
-const notification = "notification";
+const AUTHENTICATED = "authenticated";
+const MESSAGE = "message";
+const READY = "ready";
+const QR = "qr";
 
 function template(event: string, message: string) {
     return JSON.stringify({
@@ -66,12 +70,12 @@ function template(event: string, message: string) {
     });
 }
 
-client.on("loading_screen", (percent, message) => {
-    console.log("LOADING SCREEN", percent, message);
-});
-
 client.on("message", message => {
-    bot(client, message);
+    try {
+        bot(client, message);
+    } catch (error) {
+        Sentry.captureException(error);
+    }
 });
 
 export default client;

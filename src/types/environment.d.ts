@@ -5,6 +5,7 @@ declare global {
             PORT: string;
             REDIS_PORT: string;
             API_HOST: string;
+            SOCKET_PORT: string;
             REDIS_HOST: string;
         }
     }

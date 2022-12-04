@@ -28,6 +28,8 @@
   },
   "homepage": "https://github.com/kar-tini/whatsapp-web#readme",
   "dependencies": {
+    "@sentry/node": "^7.23.0",
+    "@sentry/tracing": "^7.23.0",
     "axios": "^0.24.0",
     "body-parser": "^1.20.1",
     "compression": "^1.7.4",
@@ -41,7 +43,6 @@
     "moment": "^2.29.1",
     "qrcode": "^1.5.1",
     "qrcode-terminal": "^0.12.0",
-    "socket.io": "^4.5.4",
     "swig": "^1.4.2",
     "whatsapp-web.js": "github:pedroslopez/whatsapp-web.js#fix-buttons-list",
     "ws": "^8.11.0"

@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>Whatsapp API by Ngekoding</title>
+    <title>Whatsapp API</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- This parts is optional, just for improve the styles -->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
@@ -52,44 +52,57 @@
 <body>
     <div id="app">
         <h1>Whatsapp API</h1>
-        <p>Powered by Ngekoding</p>
         <img src="" alt="QR Code" id="qrcode">
         <h3>Logs:</h3>
         <ul class="logs"></ul>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.1.min.js"
+        integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
     <script>
-        let socket = new WebSocket("ws://localhost:3001");
 
-        socket.onopen = (ev) => {
-            console.log(ev);
-        };
+        $(document).ready(function () {
+            const socket = new WebSocket("ws://localhost:3001");
+            socket.onopen = (ev) => {
+                console.log(ev);
+            };
+            socket.onmessage = (ev) => {
+                const data = JSON.parse(ev.data);
+                const payload = data.payload;
 
-        socket.addEventListener("message", (ev) => {
-            $('.logs').prepend($('<li>').text(JSON.parse(ev.data).payload));
+                switch (data.event) {
+                    case 'authenticated':
+                        $('#qrcode').hide();
+                        break;
+
+                    case 'message':
+                        $('.logs').prepend($('<li>').text(payload));
+                        break;
+
+                    case 'ready':
+                        $('#qrcode').hide();
+                        break;
+
+                    case 'qr':
+                        $('#qrcode').attr('src', payload);
+                        $('#qrcode').show();
+                        break;
+                }
+            };
+
+            // socket.on('qr', function (src) {
+            //     $('#qrcode').attr('src', src);
+            //     $('#qrcode').show();
+            // });
+
+            // socket.on('ready', function (data) {
+            //     $('#qrcode').hide();
+            // });
+
+            // socket.on('authenticated', function (data) {
+            //     $('#qrcode').hide();
+            // });
         });
-
-        socket.addEventListener("qr", (ev) => {
-            console.log(ev);
-            // $('.logs').prepend($('<li>').text(ev.data));
-        });
-
-        // $(document).ready(function () {
-        //     socket.on('qr', function (src) {
-        //         $('#qrcode').attr('src', src);
-        //         $('#qrcode').show();
-        //     });
-
-        //     socket.on('ready', function (data) {
-        //         $('#qrcode').hide();
-        //     });
-
-        //     socket.on('authenticated', function (data) {
-        //         $('#qrcode').hide();
-        //     });
-        // });
     </script>
 </body>
 
