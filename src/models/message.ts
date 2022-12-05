@@ -2,8 +2,8 @@
 import { Buttons, Client, List } from "whatsapp-web.js";
 import "dotenv/config";
 
-export function sendMessage(client: Client,  chatId: string, text: string) {
-    return client.sendMessage(chatId, text.substring(0, 1024));
+export async function sendMessage(client: Client,  chatId: string, text: string) {
+    return await client.sendMessage(chatId, text.substring(0, 1024));
 }
 
 export function sendMultipleMessage(client: Client, chatId: string, object: string[]) {
@@ -12,7 +12,7 @@ export function sendMultipleMessage(client: Client, chatId: string, object: stri
     }
 }
 
-export function sendButtonMessage(client: Client, chatId: string, body: string, action: string[]) {
+export async function sendButtonMessage(client: Client, chatId: string, body: string, action: string[]) {
     const buttons = [];
 
     for (let index = 0; index < action.length; index++) {
@@ -22,10 +22,10 @@ export function sendButtonMessage(client: Client, chatId: string, body: string, 
         });
     }
 
-    return client.sendMessage(chatId, new Buttons(body.substring(0, 1024), buttons));
+    return await client.sendMessage(chatId, new Buttons(body.substring(0, 1024), buttons));
 }
 
-export function sendListMessage(client: Client, chatId: string, body: string, action: string[]) {
+export async function sendListMessage(client: Client, chatId: string, body: string, action: string[]) {
     const length = action.length;
     const sections = [
         {
@@ -41,5 +41,5 @@ export function sendListMessage(client: Client, chatId: string, body: string, ac
         });
     }
 
-    return client.sendMessage(chatId, new List(body.substring(0, 1024), "Pilih", sections));
+    return await client.sendMessage(chatId, new List(body.substring(0, 1024), "Pilih", sections));
 }

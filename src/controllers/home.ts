@@ -5,5 +5,7 @@ import { Request, Response } from "express";
  * @route GET /
  */
 export const index = (req: Request, res: Response) => {
-    res.render("home");
+    res.render("home", {
+        socketHost: process.env.SOCKET_HOST ?? "ws://localhost:3001"
+    });
 };
