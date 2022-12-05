@@ -140,7 +140,7 @@ export async function insertAnswer(mobileNumber: string, answerData: AnswerData,
 
 export async function insertCorrespondent(temp: Temp, mobileNumber: string) {
     const userData: any[] = (await axios.get(
-        `${process.env.API_HOST}/user?mobile=${mobileNumber}`,
+        `${process.env.API_HOST}/user?mobile_number=${mobileNumber}`,
         getProperty()
     )).data.data;
 
@@ -152,11 +152,13 @@ export async function insertCorrespondent(temp: Temp, mobileNumber: string) {
             {
                 name: temp.name,
                 email: temp.email,
-                mobile: mobileNumber,
+                mobile_number: mobileNumber,
                 date_of_birth: moment(temp.dateOfBirth, "DD-MM-YYYY").format(),
                 gender: temp.gender,
                 address: temp.address,
-                postal_code_id: temp.postalCodeId
+                postal_code_id: temp.postalCodeId,
+                type: "correspondent",
+                status: "active"
             },
             getProperty()
         )).data;

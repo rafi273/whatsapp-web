@@ -36,8 +36,8 @@ export async function bot(client: Client, message: WAWebJS.Message): Promise<voi
 
         case "list_response":
             text = {
-                id: message.selectedButtonId,
-                title: message.title
+                id: message.selectedRowId,
+                title: message.body
             };
 
             break;
@@ -93,12 +93,12 @@ export async function bot(client: Client, message: WAWebJS.Message): Promise<voi
 
                 switch (previousData.question_type) {
                     case "choice":
-                        // const multipleChoiceOptions : string[] = previousData.question_choice;
+                        // const multipleChoiceOptions: string[] = (previousData.question_choice as any[]).map((value: { id: string; }) => value.id);
 
-                        // if (!ctx.text || !multipleChoiceOptions.includes(text)) {
+                        // if (!multipleChoiceOptions.includes(text.id)) {
                         //     temp.step = searchIndex(questionData, previousData.question_id);
 
-                        //     textHandling(message);
+                        //     textHandling(client, chatId);
                         //     await cache(chatId, true, temp.level, temp.step, temp.answer, answer, temp.previousData, temp.dateOfBirth, temp.name, temp.postalCodeId, temp.gender, temp.answerDetailId, temp.projectId, temp.email, temp.city, temp.urbanVillage, temp.province, temp.districts, temp.address, temp.userId, temp.messageId, temp.postalCode, temp.provinceData, temp.cityData, temp.districtsData, temp.urbanVillageData);
                         //     return;
                         // }
@@ -178,7 +178,7 @@ export async function bot(client: Client, message: WAWebJS.Message): Promise<voi
                     }
 
                     if (questionExecutionPrevious.includes("insert postal code id from urban village")) {
-                        const postalCodeData = await getPostalCode(null, temp.urbanVillage).catch(error => {
+                        const postalCodeData = await getPostalCode("", temp.urbanVillage).catch(error => {
                             throw new Error(error);
                         });
 
@@ -326,22 +326,22 @@ export async function bot(client: Client, message: WAWebJS.Message): Promise<voi
                 const questionChoice: string[] = typeof data.question_choice == "string" ? JSON.parse(data.question_choice) : data.question_choice;
 
                 if (questionChoice.length > 3) {
-                    sendListMessage(client, chatId, data.question, questionChoice);
+                    await sendListMessage(client, chatId, data.question, questionChoice);
                 } else {
-                    sendButtonMessage(client, chatId, data.question, questionChoice);
+                    await sendButtonMessage(client, chatId, data.question, questionChoice);
                 }
 
                 break;
 
             case "open text":
-                sendMessage(client, chatId, data.question);
+                await sendMessage(client, chatId, data.question);
                 break;
 
             case "text":
-                sendMessage(client, chatId, data.question);
+                await sendMessage(client, chatId, data.question);
 
                 if (!choose) {
-                    sendMessage(client, chatId, endMessage()[0]);
+                    await sendMessage(client, chatId, endMessage()[0]);
                     redis.del(chatId);
                     return;
                 }
@@ -354,7 +354,7 @@ export async function bot(client: Client, message: WAWebJS.Message): Promise<voi
                 return;
 
             case "location":
-                sendMessage(client, chatId, data.question);
+                await sendMessage(client, chatId, data.question);
                 break;
         }
 
