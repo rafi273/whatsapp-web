@@ -173,7 +173,7 @@ export async function bot(client: Client, message: WAWebJS.Message): Promise<voi
                     }
 
                     if (questionExecutionPrevious.includes("insert correspondent")) {
-                        insertCorrespondent(temp, chatId.split("@")[0]).catch(error => {
+                        temp = await insertCorrespondent(temp, chatId.split("@")[0]).catch(error => {
                             throw new Error(error);
                         });
                     }
