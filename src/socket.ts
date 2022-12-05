@@ -5,7 +5,7 @@ import * as Sentry from "@sentry/node";
 import "dotenv/config";
 
 // Controllers (route handlers)
-import { bot } from "./controllers/bot";
+import { bot } from "./models/bot";
 
 const client = new Client({
     puppeteer: {

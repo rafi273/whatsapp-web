@@ -8,6 +8,8 @@ import "dotenv/config";
 
 // Controllers (route handlers)
 import * as homeController from "./controllers/home";
+import * as apiController from "./controllers/api";
+import * as secutity from "./util/secutity";
 
 // Create Express server
 const app = express();
@@ -28,5 +30,10 @@ app.disable("x-powered-by");
  * Primary app routes.
  */
 app.get("/", homeController.index);
+
+/**
+ * API examples routes.
+ */
+ app.get("/api/broadcast", secutity.getKartiniSignature, apiController.getBroadcast);
 
 export default app;
