@@ -92,7 +92,7 @@ export async function bot(client: Client, message: WAWebJS.Message): Promise<voi
 
                 switch (previousData.question_type) {
                     case "choice":
-                        const questionChoice: any[] = previousData.question_choice;
+                        const questionChoice: string[] = typeof data.question_choice == "string" ? JSON.parse(previousData.question_choice) : previousData.question_choice;
 
                         console.log(questionChoice);
 
