@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import cache from "../models/cache";
+import cache from "./cache";
 import redis from "../config/redis";
 import WAWebJS, { Client } from "whatsapp-web.js";
-import { sendMessage, sendMultipleMessage, sendButtonMessage, sendListMessage } from "../models/message";
-import { getQuestionCache, searchIndex, insertAnswer, getQuestionData, getProject, getChatQuestion, getPostalCode, getCity, getProvince, getDistricts, getUrbanVillage, insertCorrespondent } from "../models/data";
-import { endMessage, textHandling } from "../utils/notification";
+import { sendMessage, sendMultipleMessage, sendButtonMessage, sendListMessage } from "./message";
+import { getQuestionCache, searchIndex, insertAnswer, getQuestionData, getProject, getChatQuestion, getPostalCode, getCity, getProvince, getDistricts, getUrbanVillage, insertCorrespondent } from "./data";
+import { endMessage, textHandling } from "../util/notification";
 import { AnswerData } from "answerData";
 import "dotenv/config";
 

@@ -10,7 +10,7 @@ import "dotenv/config";
 export function getProperty(): AxiosRequestConfig {
     return {
         headers: {
-            "X-Lsn-Signature": "YXVsaWFpbm92YXNpQGxzbjEyMw=="
+            "X-Auliainovasi-Signature": "YXVsaWFpbm92YXNpQDIzMQ=="
         }
     };
 }
