@@ -93,12 +93,9 @@ export async function bot(client: Client, message: WAWebJS.Message): Promise<voi
                 switch (previousData.question_type) {
                     case "choice":
                         const questionChoice: any[] = previousData.question_choice;
-                        const idOptions: string[] = questionChoice.map((_value, index) => (index + 1).toString());
+                        const idOptions = questionChoice.map((_value, index) => (index + 1).toString());
                         const titleOptions: string[] = questionChoice.map(value => value);
 
-                        console.log(idOptions);
-                        console.log(titleOptions);
-                        console.log(text);
                         if (!["buttons_response", "list_response"].includes(messageType) || !idOptions.includes(text.id) || !titleOptions.includes(text.title)) {
                             temp.step = searchIndex(questionData, previousData.question_id);
 
