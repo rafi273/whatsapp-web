@@ -165,7 +165,7 @@ export async function insertCorrespondent(temp: Temp, mobileNumber: string) {
         temp.userId = userPost.data.id;
     }
 
-    await cache(mobileNumber, true, temp.level, temp.step, temp.answer, null, temp.previousData, temp.dateOfBirth, temp.name, temp.postalCodeId, temp.gender, temp.answerDetailId, temp.projectId, temp.email, temp.city, temp.urbanVillage, temp.province, temp.districts, temp.address, temp.userId, temp.messageId, temp.postalCode, temp.provinceData, temp.cityData, temp.districtsData, temp.urbanVillageData);
+    return temp;
 }
 
 export function searchIndex(question: any[], questionId: number) {
