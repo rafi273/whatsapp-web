@@ -21,24 +21,16 @@ export async function bot(client: Client, message: WAWebJS.Message): Promise<voi
             text = message.body;
 
             if (text.match(/^clear cache$/i)) {
-                sendMultipleMessage(client, chatId, endMessage("Cache dibersihkan"));
+                await sendMultipleMessage(client, chatId, endMessage("Cache dibersihkan"));
                 redis.flushdb();
                 return;
             }
 
             if (text.match(/^batal$/i)) {
-                sendMultipleMessage(client, chatId, endMessage("Sesi telah dibatalkan"));
+                await sendMultipleMessage(client, chatId, endMessage("Sesi telah dibatalkan"));
                 redis.del(chatId);
                 return;
             }
-
-            break;
-
-        case "list_response":
-            text = {
-                id: message.selectedRowId,
-                title: message.body
-            };
 
             break;
 
@@ -50,17 +42,23 @@ export async function bot(client: Client, message: WAWebJS.Message): Promise<voi
 
             break;
 
+        case "list_response":
+            text = {
+                id: message.selectedRowId,
+                title: message.body
+            };
+
+            break;
+
         case "location":
             text = `${message.location.latitude};${message.location.longitude}`;
 
             break;
 
         default:
-            sendMultipleMessage(client, chatId, endMessage("Jenis pesan tidak didukung"));
+            await sendMultipleMessage(client, chatId, endMessage("Jenis pesan tidak didukung"));
             return;
     }
-
-    console.log(text);
 
     if (temp.level == 1) {
         let chatQuestionTrigger: any;
@@ -70,7 +68,7 @@ export async function bot(client: Client, message: WAWebJS.Message): Promise<voi
         }
 
         if (!chatQuestionTrigger) {
-            sendMultipleMessage(client, chatId, endMessage(`${typeof text == "object" ? text.title : text} tidak ditemukan`));
+            await sendMultipleMessage(client, chatId, endMessage(`${typeof text == "object" ? text.title : text} tidak ditemukan`));
             return;
         }
 
@@ -90,26 +88,32 @@ export async function bot(client: Client, message: WAWebJS.Message): Promise<voi
         if (temp.answer) {
             if (temp.previousData.length) {
                 const previousData = temp.previousData[temp.previousData.length - 1];
+                const messageType = message.type.toString();
 
                 switch (previousData.question_type) {
                     case "choice":
-                        // const multipleChoiceOptions: string[] = (previousData.question_choice as any[]).map((value: { id: string; }) => value.id);
+                        const questionChoice: any[] = previousData.question_choice;
+                        const idOptions: string[] = questionChoice.map((_value, index) => (index + 1).toString());
+                        const titleOptions: string[] = questionChoice.map(value => value);
 
-                        // if (!multipleChoiceOptions.includes(text.id)) {
-                        //     temp.step = searchIndex(questionData, previousData.question_id);
+                        console.log(idOptions);
+                        console.log(titleOptions);
+                        console.log(text);
+                        if (!["buttons_response", "list_response"].includes(messageType) || !idOptions.includes(text.id) || !titleOptions.includes(text.title)) {
+                            temp.step = searchIndex(questionData, previousData.question_id);
 
-                        //     textHandling(client, chatId);
-                        //     await cache(chatId, true, temp.level, temp.step, temp.answer, answer, temp.previousData, temp.dateOfBirth, temp.name, temp.postalCodeId, temp.gender, temp.answerDetailId, temp.projectId, temp.email, temp.city, temp.urbanVillage, temp.province, temp.districts, temp.address, temp.userId, temp.messageId, temp.postalCode, temp.provinceData, temp.cityData, temp.districtsData, temp.urbanVillageData);
-                        //     return;
-                        // }
+                            await textHandling(client, chatId);
+                            await cache(chatId, true, temp.level, temp.step, temp.answer, answer, temp.previousData, temp.dateOfBirth, temp.name, temp.postalCodeId, temp.gender, temp.answerDetailId, temp.projectId, temp.email, temp.city, temp.urbanVillage, temp.province, temp.districts, temp.address, temp.userId, temp.messageId, temp.postalCode, temp.provinceData, temp.cityData, temp.districtsData, temp.urbanVillageData);
+                            return;
+                        }
 
                         break;
 
                     case "open text":
-                        if (message.type.toString() != "chat") {
+                        if (messageType != "chat") {
                             temp.step = searchIndex(questionData, previousData.question_id);
 
-                            textHandling(client, chatId);
+                            await textHandling(client, chatId);
                             await cache(chatId, true, temp.level, temp.step, temp.answer, answer, temp.previousData, temp.dateOfBirth, temp.name, temp.postalCodeId, temp.gender, temp.answerDetailId, temp.projectId, temp.email, temp.city, temp.urbanVillage, temp.province, temp.districts, temp.address, temp.userId, temp.messageId, temp.postalCode, temp.provinceData, temp.cityData, temp.districtsData, temp.urbanVillageData);
                             return;
                         }
@@ -117,10 +121,10 @@ export async function bot(client: Client, message: WAWebJS.Message): Promise<voi
                         break;
 
                     case "location":
-                        if (message.type != "location") {
+                        if (messageType != "location") {
                             temp.step = searchIndex(questionData, previousData.question_id);
     
-                            textHandling(client, chatId);
+                            await textHandling(client, chatId);
                             await cache(chatId, true, temp.level, temp.step, temp.answer, answer, temp.previousData, temp.dateOfBirth, temp.name, temp.postalCodeId, temp.gender, temp.answerDetailId, temp.projectId, temp.email, temp.city, temp.urbanVillage, temp.province, temp.districts, temp.address, temp.userId, temp.messageId, temp.postalCode, temp.provinceData, temp.cityData, temp.districtsData, temp.urbanVillageData);
                             return;
                         }
@@ -185,7 +189,7 @@ export async function bot(client: Client, message: WAWebJS.Message): Promise<voi
                         if (!postalCodeData.length) {
                             temp.step = searchIndex(questionData, previousData.question_id);
 
-                            sendMessage(client, chatId, "Data kode pos tidak ditemukan");
+                            await sendMessage(client, chatId, "Data kode pos tidak ditemukan");
                             await cache(chatId, true, temp.level, temp.step, temp.answer, answer, temp.previousData, temp.dateOfBirth, temp.name, temp.postalCodeId, temp.gender, temp.answerDetailId, temp.projectId, temp.email, temp.city, temp.urbanVillage, temp.province, temp.districts, temp.address, temp.userId, temp.messageId, temp.postalCode, temp.provinceData, temp.cityData, temp.districtsData, temp.urbanVillageData);
                             return;
                         }
@@ -201,7 +205,7 @@ export async function bot(client: Client, message: WAWebJS.Message): Promise<voi
                         if (!provinceData.length) {
                             temp.step = searchIndex(questionData, previousData.question_id);
 
-                            sendMessage(client, chatId, "Provinsi tidak ditemukan");
+                            await sendMessage(client, chatId, "Provinsi tidak ditemukan");
                             await cache(chatId, true, temp.level, temp.step, temp.answer, answer, temp.previousData, temp.dateOfBirth, temp.name, temp.postalCodeId, temp.gender, temp.answerDetailId, temp.projectId, temp.email, temp.city, temp.urbanVillage, temp.province, temp.districts, temp.address, temp.userId, temp.messageId, temp.postalCode, temp.provinceData, temp.cityData, temp.districtsData, temp.urbanVillageData);
                             return;
                         }
@@ -217,7 +221,7 @@ export async function bot(client: Client, message: WAWebJS.Message): Promise<voi
                         if (!cityData.length) {
                             temp.step = searchIndex(questionData, previousData.question_id);
 
-                            sendMessage(client, chatId, "Kota tidak ditemukan");
+                            await sendMessage(client, chatId, "Kota tidak ditemukan");
                             await cache(chatId, true, temp.level, temp.step, temp.answer, answer, temp.previousData, temp.dateOfBirth, temp.name, temp.postalCodeId, temp.gender, temp.answerDetailId, temp.projectId, temp.email, temp.city, temp.urbanVillage, temp.province, temp.districts, temp.address, temp.userId, temp.messageId, temp.postalCode, temp.provinceData, temp.cityData, temp.districtsData, temp.urbanVillageData);
                             return;
                         }
@@ -233,7 +237,7 @@ export async function bot(client: Client, message: WAWebJS.Message): Promise<voi
                         if (!districtsData.length) {
                             temp.step = searchIndex(questionData, previousData.question_id);
 
-                            sendMessage(client, chatId, "Kecamatan tidak ditemukan");
+                            await sendMessage(client, chatId, "Kecamatan tidak ditemukan");
                             await cache(chatId, true, temp.level, temp.step, temp.answer, answer, temp.previousData, temp.dateOfBirth, temp.name, temp.postalCodeId, temp.gender, temp.answerDetailId, temp.projectId, temp.email, temp.city, temp.urbanVillage, temp.province, temp.districts, temp.address, temp.userId, temp.messageId, temp.postalCode, temp.provinceData, temp.cityData, temp.districtsData, temp.urbanVillageData);
                             return;
                         }
@@ -249,7 +253,7 @@ export async function bot(client: Client, message: WAWebJS.Message): Promise<voi
                         if (!urbanVillageData.length) {
                             temp.step = searchIndex(questionData, previousData.question_id);
 
-                            sendMessage(client, chatId, "Kelurahan tidak ditemukan");
+                            await sendMessage(client, chatId, "Kelurahan tidak ditemukan");
                             await cache(chatId, true, temp.level, temp.step, temp.answer, answer, temp.previousData, temp.dateOfBirth, temp.name, temp.postalCodeId, temp.gender, temp.answerDetailId, temp.projectId, temp.email, temp.city, temp.urbanVillage, temp.province, temp.districts, temp.address, temp.userId, temp.messageId, temp.postalCode, temp.provinceData, temp.cityData, temp.districtsData, temp.urbanVillageData);
                             return;
                         }

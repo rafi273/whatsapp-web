@@ -6,9 +6,9 @@ export async function sendMessage(client: Client,  chatId: string, text: string)
     return await client.sendMessage(chatId, text.substring(0, 1024));
 }
 
-export function sendMultipleMessage(client: Client, chatId: string, object: string[]) {
+export async function sendMultipleMessage(client: Client, chatId: string, object: string[]) {
     for (const iterator of object) {
-        sendMessage(client, chatId, iterator);
+        await sendMessage(client, chatId, iterator);
     }
 }
 
