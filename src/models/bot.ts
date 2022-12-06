@@ -351,8 +351,6 @@ export async function bot(client: Client, message: WAWebJS.Message): Promise<voi
 
         switch (data.question_type) {
             case "choice":
-                console.log(data.question_choice);
-
                 const questionChoice: string[] = typeof data.question_choice == "string" ? JSON.parse(data.question_choice) : data.question_choice;
 
                 if (questionChoice.length > 3) {
