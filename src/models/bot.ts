@@ -329,22 +329,22 @@ export async function bot(client: Client, message: WAWebJS.Message): Promise<voi
 
         switch (data.question_choice) {
             case "province":
-                data.question_choice = temp.provinceData ? temp.provinceData : temp.provinceData.map((value: any) => value.province);
+                data.question_choice = temp.provinceData.length ? temp.provinceData : temp.provinceData.map((value: any) => value.province);
 
                 break;
 
             case "city":
-                data.question_choice = temp.cityData ? temp.cityData : temp.cityData.map((value: any) => value.city);
+                data.question_choice = temp.cityData.length ? temp.cityData : temp.cityData.map((value: any) => value.city);
 
                 break;
 
             case "districts":
-                data.question_choice = temp.districtsData ? temp.districtsData : temp.districtsData.map((value: any) => value.districts);
+                data.question_choice = temp.districtsData.length ? temp.districtsData : temp.districtsData.map((value: any) => value.districts);
 
                 break;
 
             case "urban village":
-                data.question_choice = temp.urbanVillageData ? temp.urbanVillageData : temp.urbanVillageData.map((value: any) => value.urban_village);
+                data.question_choice = temp.urbanVillageData.length ? temp.urbanVillageData : temp.urbanVillageData.map((value: any) => value.urban_village);
 
                 break;
         }
