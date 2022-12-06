@@ -19,10 +19,10 @@ export interface Temp {
     userId: number;
     messageId: string[];
     postalCode: number;
-    provinceData: string[];
-    cityData: string[];
-    districtsData: string[];
-    urbanVillageData: string[];
+    provinceData: any[];
+    cityData: any[];
+    districtsData: any[];
+    urbanVillageData: any[];
 }
 
 declare module "Temp";
