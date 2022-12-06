@@ -173,15 +173,11 @@ export async function bot(client: Client, message: WAWebJS.Message): Promise<voi
                     }
 
                     if (questionExecutionPrevious.includes("insert correspondent")) {
-                        temp = await insertCorrespondent(temp, chatId.split("@")[0]).catch(error => {
-                            throw new Error(error);
-                        });
+                        temp = await insertCorrespondent(temp, chatId.split("@")[0]);
                     }
 
                     if (questionExecutionPrevious.includes("insert postal code id from urban village")) {
-                        const postalCodeData = await getPostalCode("", temp.urbanVillage).catch(error => {
-                            throw new Error(error);
-                        });
+                        const postalCodeData = await getPostalCode("", temp.urbanVillage);
 
                         if (!postalCodeData.length) {
                             temp.step = searchIndex(questionData, previousData.question_id);
@@ -195,9 +191,7 @@ export async function bot(client: Client, message: WAWebJS.Message): Promise<voi
                     }
 
                     if (questionExecutionPrevious.includes("search province")) {
-                        const provinceData = await getProvince(temp.province).catch(error => {
-                            throw new Error(error);
-                        });
+                        const provinceData = await getProvince(temp.province);
 
                         if (!provinceData.length) {
                             temp.step = searchIndex(questionData, previousData.question_id);
@@ -211,9 +205,7 @@ export async function bot(client: Client, message: WAWebJS.Message): Promise<voi
                     }
 
                     if (questionExecutionPrevious.includes("search city")) {
-                        const cityData = await getCity(temp.city, temp.province).catch(error => {
-                            throw new Error(error);
-                        });
+                        const cityData = await getCity(temp.city, temp.province);
 
                         if (!cityData.length) {
                             temp.step = searchIndex(questionData, previousData.question_id);
@@ -226,10 +218,49 @@ export async function bot(client: Client, message: WAWebJS.Message): Promise<voi
                         temp.cityData = cityData;
                     }
 
+                    if (questionExecutionPrevious.includes("search city in cerelac")) {
+                        switch (temp.province) {
+                            case "DKI Jakarta":
+                                temp.cityData = ["Kota Jakarta Barat", "Kota Jakarta Pusat", "Kota Jakarta Selatan", "Kota Jakarta Timur", "Kota Jakarta Timur"];
+
+                                break;
+
+                            case "Banten":
+                                temp.cityData = ["Kota Tangerang", "Kota Tangerang Selatan"];
+
+                                break;
+
+                            case "Jawa Barat":
+                                temp.cityData = ["Kota Depok", "Kota Bekasi", "Kota Bogor", "Kota Bandung", "Kabupaten Bandung", "Kabupaten Bandung Barat", "Kota Cirebon", "Kabupaten Cirebon", "Kota Cimahi", "Kota Tasikmalaya"];
+
+                                break;
+
+                            case "Jawa Tengah":
+                                temp.cityData = ["Kota Semarang", "Kota Tegal", "Kabupaten Banyumas"];
+
+                                break;
+
+                            case "DI Yogyakarta":
+                                temp.cityData = ["Kota Yogyakarta"];
+
+                                break;
+
+                            case "Jawa Timur":
+                                temp.cityData = ["Kota Surabaya", "Kota Malang", "Kabupaten Sidoarjo"];
+
+                                break;
+
+                            default:
+                                temp.step = searchIndex(questionData, previousData.question_id);
+
+                                await sendMessage(client, chatId, "Kecamatan tidak ditemukan");
+                                await cache(chatId, true, temp.level, temp.step, temp.answer, answer, temp.previousData, temp.dateOfBirth, temp.name, temp.postalCodeId, temp.gender, temp.answerDetailId, temp.projectId, temp.email, temp.city, temp.urbanVillage, temp.province, temp.districts, temp.address, temp.userId, temp.messageId, temp.postalCode, temp.provinceData, temp.cityData, temp.districtsData, temp.urbanVillageData);
+                                return;
+                        }
+                    }
+
                     if (questionExecutionPrevious.includes("search districts")) {
-                        const districtsData = await getDistricts(temp.districts, temp.city).catch(error => {
-                            throw new Error(error);
-                        });
+                        const districtsData = await getDistricts(temp.districts, temp.city);
 
                         if (!districtsData.length) {
                             temp.step = searchIndex(questionData, previousData.question_id);
@@ -243,9 +274,7 @@ export async function bot(client: Client, message: WAWebJS.Message): Promise<voi
                     }
 
                     if (questionExecutionPrevious.includes("search urban village")) {
-                        const urbanVillageData = await getUrbanVillage(temp.urbanVillage, temp.districts).catch(error => {
-                            throw new Error(error);
-                        });
+                        const urbanVillageData = await getUrbanVillage(temp.urbanVillage, temp.districts);
 
                         if (!urbanVillageData.length) {
                             temp.step = searchIndex(questionData, previousData.question_id);
@@ -272,9 +301,7 @@ export async function bot(client: Client, message: WAWebJS.Message): Promise<voi
 
                     temp.step -= 1;
 
-                    await insertAnswer(chatId, answerData(data.question_id, text), temp).catch(error => {
-                        throw new Error(error);
-                    });
+                    await insertAnswer(chatId, answerData(data.question_id, text), temp);
                 }
 
                 data = questionData[temp.step];
@@ -302,22 +329,22 @@ export async function bot(client: Client, message: WAWebJS.Message): Promise<voi
 
         switch (data.question_choice) {
             case "province":
-                data.question_choice = temp.provinceData.map((value: any) => value.province);
+                data.question_choice = temp.provinceData ? temp.provinceData : temp.provinceData.map((value: any) => value.province);
 
                 break;
 
             case "city":
-                data.question_choice = temp.cityData.map((value: any) => value.city);
+                data.question_choice = temp.cityData ? temp.cityData : temp.cityData.map((value: any) => value.city);
 
                 break;
 
             case "districts":
-                data.question_choice = temp.districtsData.map((value: any) => value.districts);
+                data.question_choice = temp.districtsData ? temp.districtsData : temp.districtsData.map((value: any) => value.districts);
 
                 break;
 
             case "urban village":
-                data.question_choice = temp.urbanVillageData.map((value: any) => value.urban_village);
+                data.question_choice = temp.urbanVillageData ? temp.urbanVillageData : temp.urbanVillageData.map((value: any) => value.urban_village);
 
                 break;
         }
