@@ -6,7 +6,7 @@ import { sendMessage } from "../models/message";
  * Broadcast API example.
  * @route GET /api/broadcast
  */
-export const getBroadcast = async (req: Request, res: Response) => {
+export async function getBroadcast(req: Request, res: Response) {
     const body = req.body;
 
     for (const iterator of body.to) {
@@ -17,10 +17,8 @@ export const getBroadcast = async (req: Request, res: Response) => {
             return res.sendStatus(400);
         }
 
-        await sendMessage(client, `${mobileNumber.substring(1)}@c.us`, text).catch(error => {
-            throw new Error(error);
-        });
+        await sendMessage(client, `${mobileNumber.substring(1)}@c.us`, text);
     }
 
     return res.sendStatus(200);
-};
+}
