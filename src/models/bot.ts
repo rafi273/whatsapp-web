@@ -8,7 +8,7 @@ import { endMessage, textHandling } from "../util/notification";
 import { AnswerData } from "answerData";
 import "dotenv/config";
 
-export async function bot(client: Client, message: WAWebJS.Message): Promise<void> {
+export async function bot(client: Client, message: WAWebJS.Message, step = false): Promise<void> {
     const chatId: string = message.from;
     let temp = await cache(chatId),
         data,
@@ -290,7 +290,7 @@ export async function bot(client: Client, message: WAWebJS.Message): Promise<voi
 
                 const questionRedirect = questionData[temp.step].question_redirect;
 
-                if (questionRedirect) {
+                if (questionRedirect && !step) {
                     const choose: number[] = JSON.parse(questionRedirect);
 
                     if (choose.length > 1) {
@@ -375,11 +375,10 @@ export async function bot(client: Client, message: WAWebJS.Message): Promise<voi
                 }
 
                 temp.step = choose[0] - 1;
-                temp.previousData = data;
 
                 temp.previousData.push(data);
                 await cache(chatId, true, temp.level, temp.step, temp.answer, answer, temp.previousData, temp.dateOfBirth, temp.name, temp.postalCodeId, temp.gender, temp.answerDetailId, temp.projectId, temp.email, temp.city, temp.urbanVillage, temp.province, temp.districts, temp.address, temp.userId, temp.messageId, temp.postalCode, temp.provinceData, temp.cityData, temp.districtsData, temp.urbanVillageData);
-                return;
+                return bot(client, message, true);
 
             case "location":
                 await sendMessage(client, chatId, data.question);
