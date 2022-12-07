@@ -354,22 +354,22 @@ export async function bot(client: Client, message: WAWebJS.Message, step = false
                 const questionChoice: string[] = typeof data.question_choice == "string" ? JSON.parse(data.question_choice) : data.question_choice;
 
                 if (questionChoice.length > 3) {
-                    await sendListMessage(client, chatId, data.question, questionChoice);
+                    sendListMessage(client, chatId, data.question, questionChoice);
                 } else {
-                    await sendButtonMessage(client, chatId, data.question, questionChoice);
+                    sendButtonMessage(client, chatId, data.question, questionChoice);
                 }
 
                 break;
 
             case "open text":
-                await sendMessage(client, chatId, data.question);
+                sendMessage(client, chatId, data.question);
                 break;
 
             case "text":
                 await sendMessage(client, chatId, data.question);
 
                 if (!choose) {
-                    await sendMessage(client, chatId, endMessage()[0]);
+                    sendMessage(client, chatId, endMessage()[0]);
                     redis.del(chatId);
                     return;
                 }
@@ -381,7 +381,7 @@ export async function bot(client: Client, message: WAWebJS.Message, step = false
                 return bot(client, message, true);
 
             case "location":
-                await sendMessage(client, chatId, data.question);
+                sendMessage(client, chatId, data.question);
                 break;
         }
 
