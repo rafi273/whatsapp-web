@@ -25,35 +25,35 @@ export async function getQuestionCache(key: string, data?: any): Promise<any[]> 
     return JSON.parse(data === undefined ? "" : data);
 }
 
-export async function getPostalCode(postalCode = "", urbanVillage = "", districts = "", city = "", province = ""): Promise<any[]> {
+export async function getPostalCode({postalCode = "", urbanVillage = "", districts = "", city = "", province = ""}): Promise<any[]> {
     return (await axios.get(
         `${process.env.API_HOST}/postalCode?postal_code=${postalCode}&urban_village=${urbanVillage}&districts=${districts}&city=${city}&province=${province}`,
         getProperty()
     )).data.data;
 }
 
-export async function getProvince(query?: string) {
+export async function getProvince(query = "") {
     return (await axios.get(
         `${process.env.API_HOST}/v2/collection/postalCode/province?query=${query}`,
         getProperty()
     )).data.data;
 }
 
-export async function getCity(query?: string, province? :string) {
+export async function getCity({query = "", province = ""}) {
     return (await axios.get(
         `${process.env.API_HOST}/v2/collection/postalCode/city?query=${query}&province=${province}`,
         getProperty()
     )).data.data;
 }
 
-export async function getDistricts(query?: string, city? :string) {
+export async function getDistricts({query = "", city = ""}) {
     return (await axios.get(
         `${process.env.API_HOST}/v2/collection/postalCode/districts?query=${query}&city=${city}`,
         getProperty()
     )).data.data;
 }
 
-export async function getUrbanVillage(query?: string, districts? :string) {
+export async function getUrbanVillage({query = "", districts = ""}) {
     return (await axios.get(
         `${process.env.API_HOST}/v2/collection/postalCode/urbanVillage?query=${query}&districts=${districts}`,
         getProperty()
@@ -81,7 +81,7 @@ export async function getProject(): Promise<any[]> {
     )).data.data;
 }
 
-export async function getChatQuestion(projectId: string): Promise<any[]> {
+export async function getChatQuestion(projectId = ""): Promise<any[]> {
     return (await axios.get(
         `${process.env.API_HOST}/question?project_id=${projectId}&status=active`,
         getProperty()
