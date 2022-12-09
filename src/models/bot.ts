@@ -221,7 +221,7 @@ export async function bot(client: Client, message: WAWebJS.Message, step = false
                     if (questionExecutionPrevious.includes("search city in cerelac")) {
                         switch (temp.province) {
                             case "DKI Jakarta":
-                                temp.cityData = ["Kota Jakarta Barat", "Kota Jakarta Pusat", "Kota Jakarta Selatan", "Kota Jakarta Timur"];
+                                temp.cityData = ["Kota Jakarta Barat", "Kota Jakarta Pusat", "Kota Jakarta Selatan", "Kota Jakarta Timur", "Kota Jakarta Utara"];
 
                                 break;
 
