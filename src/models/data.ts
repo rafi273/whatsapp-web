@@ -124,7 +124,7 @@ export async function insertAnswer(mobileNumber: string, answerData: AnswerData,
     if (method == "post") {
         temp.answerDetailId = answerDetailUpload.data.data.id;
 
-        await cache(mobileNumber, true, temp.level, temp.step, temp.answer, null, temp.previousData, temp.dateOfBirth, temp.name, temp.postalCodeId, temp.gender, temp.answerDetailId, temp.projectId, temp.email, temp.city, temp.urbanVillage, temp.province, temp.districts, temp.address, temp.userId, temp.messageId, temp.postalCode, temp.provinceData, temp.cityData, temp.districtsData, temp.urbanVillageData);
+        await cache(mobileNumber, true, temp.level, temp.step, temp.answer, null, null, temp.dateOfBirth, temp.name, temp.postalCodeId, temp.gender, temp.answerDetailId, temp.projectId, temp.email, temp.city, temp.urbanVillage, temp.province, temp.districts, temp.address, temp.userId, temp.messageId, temp.postalCode, temp.provinceData, temp.cityData, temp.districtsData, temp.urbanVillageData);
     }
 
     return await axios.post(
