@@ -3,7 +3,7 @@ import redis from "../config/redis";
 import { AnswerData } from "answerData";
 import { Temp } from "temp";
 
-export default async function(chatId: string, update = false, level?: number, step?: number, answer?: boolean, data?: AnswerData, previousData?: any[], dateOfBirth?: string, name?: string, postalCodeId?: number, gender?: string, answerDetailId?: number, projectId?: number, email?: string, city?: string, urbanVillage?: string, province?: string, districts?: string, address?: string, userId?: number, messageId?: string[], postalCode?: number, provinceData?: any[], cityData?: any[], districtsData?: any[], urbanVillageData?: any[]): Promise<Temp> {
+export default async function(chatId: string, update = false, level?: number, step?: number, answer?: boolean, data?: AnswerData, previousData?: any, dateOfBirth?: string, name?: string, postalCodeId?: number, gender?: string, answerDetailId?: number, projectId?: number, email?: string, city?: string, urbanVillage?: string, province?: string, districts?: string, address?: string, userId?: number, messageId?: string[], postalCode?: number, provinceData?: any[], cityData?: any[], districtsData?: any[], urbanVillageData?: any[]): Promise<Temp> {
     const arr = await redis.get(chatId);
     let temp: Temp = {
         level: 1,
@@ -53,7 +53,7 @@ export default async function(chatId: string, update = false, level?: number, st
     }
 
     if (previousData) {
-        temp.previousData = previousData;
+        temp.previousData.push(previousData);
     }
 
     if (dateOfBirth) {
