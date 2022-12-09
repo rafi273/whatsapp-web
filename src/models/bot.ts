@@ -273,6 +273,22 @@ export async function bot(client: Client, message: WAWebJS.Message, step = false
                         temp.districtsData = districtsData;
                     }
 
+                    if (questionExecutionPrevious.includes("confirm & search districts")) {
+                        if (text.title == "Benar") {
+                            const districtsData = await getDistricts(temp.districts, temp.city);
+
+                            if (!districtsData.length) {
+                                temp.step = searchIndex(questionData, previousData.question_id);
+
+                                await sendMessage(client, chatId, "Kecamatan tidak ditemukan");
+                                await cache(chatId, true, temp.level, temp.step, temp.answer, answer, temp.previousData, temp.dateOfBirth, temp.name, temp.postalCodeId, temp.gender, temp.answerDetailId, temp.projectId, temp.email, temp.city, temp.urbanVillage, temp.province, temp.districts, temp.address, temp.userId, temp.messageId, temp.postalCode, temp.provinceData, temp.cityData, temp.districtsData, temp.urbanVillageData);
+                                return;
+                            }
+
+                            temp.districtsData = districtsData;
+                        }
+                    }
+
                     if (questionExecutionPrevious.includes("search urban village")) {
                         const urbanVillageData = await getUrbanVillage(temp.urbanVillage, temp.districts);
 
@@ -285,6 +301,22 @@ export async function bot(client: Client, message: WAWebJS.Message, step = false
                         }
 
                         temp.urbanVillageData = urbanVillageData;
+                    }
+
+                    if (questionExecutionPrevious.includes("confirm & search urban village")) {
+                        if (text.title == "Benar") {
+                            const urbanVillageData = await getUrbanVillage(temp.urbanVillage, temp.districts);
+
+                            if (!urbanVillageData.length) {
+                                temp.step = searchIndex(questionData, previousData.question_id);
+
+                                await sendMessage(client, chatId, "Kelurahan tidak ditemukan");
+                                await cache(chatId, true, temp.level, temp.step, temp.answer, answer, temp.previousData, temp.dateOfBirth, temp.name, temp.postalCodeId, temp.gender, temp.answerDetailId, temp.projectId, temp.email, temp.city, temp.urbanVillage, temp.province, temp.districts, temp.address, temp.userId, temp.messageId, temp.postalCode, temp.provinceData, temp.cityData, temp.districtsData, temp.urbanVillageData);
+                                return;
+                            }
+
+                            temp.urbanVillageData = urbanVillageData;
+                        }
                     }
                 }
 
