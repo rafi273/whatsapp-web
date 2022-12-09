@@ -177,7 +177,7 @@ export async function bot(client: Client, message: WAWebJS.Message, step = false
                     }
 
                     if (questionExecutionPrevious.includes("insert postal code id from urban village")) {
-                        const postalCodeData = await getPostalCode("", temp.urbanVillage);
+                        const postalCodeData = await getPostalCode({urbanVillage: temp.urbanVillage});
 
                         if (!postalCodeData.length) {
                             temp.step = searchIndex(questionData, previousData.question_id);
@@ -205,7 +205,7 @@ export async function bot(client: Client, message: WAWebJS.Message, step = false
                     }
 
                     if (questionExecutionPrevious.includes("search city")) {
-                        const cityData = await getCity(temp.city, temp.province);
+                        const cityData = await getCity({query: temp.city, province: temp.province});
 
                         if (!cityData.length) {
                             temp.step = searchIndex(questionData, previousData.question_id);
@@ -260,7 +260,7 @@ export async function bot(client: Client, message: WAWebJS.Message, step = false
                     }
 
                     if (questionExecutionPrevious.includes("search districts")) {
-                        const districtsData = await getDistricts(temp.districts, temp.city);
+                        const districtsData = await getDistricts({query: temp.districts, city: temp.city});
 
                         if (!districtsData.length) {
                             temp.step = searchIndex(questionData, previousData.question_id);
@@ -275,7 +275,7 @@ export async function bot(client: Client, message: WAWebJS.Message, step = false
 
                     if (questionExecutionPrevious.includes("confirm & search districts")) {
                         if (text.title == "Benar") {
-                            const districtsData = await getDistricts(temp.districts, temp.city);
+                            const districtsData = await getDistricts({query: temp.districts, city: temp.city});
 
                             if (!districtsData.length) {
                                 temp.step = searchIndex(questionData, previousData.question_id);
@@ -290,7 +290,7 @@ export async function bot(client: Client, message: WAWebJS.Message, step = false
                     }
 
                     if (questionExecutionPrevious.includes("search urban village")) {
-                        const urbanVillageData = await getUrbanVillage(temp.urbanVillage, temp.districts);
+                        const urbanVillageData = await getUrbanVillage({query: temp.urbanVillage, districts: temp.districts});
 
                         if (!urbanVillageData.length) {
                             temp.step = searchIndex(questionData, previousData.question_id);
@@ -305,7 +305,7 @@ export async function bot(client: Client, message: WAWebJS.Message, step = false
 
                     if (questionExecutionPrevious.includes("confirm & search urban village")) {
                         if (text.title == "Benar") {
-                            const urbanVillageData = await getUrbanVillage(temp.urbanVillage, temp.districts);
+                            const urbanVillageData = await getUrbanVillage({query: temp.urbanVillage, districts: temp.districts});
 
                             if (!urbanVillageData.length) {
                                 temp.step = searchIndex(questionData, previousData.question_id);
