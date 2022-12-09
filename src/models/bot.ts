@@ -98,10 +98,12 @@ export async function bot(client: Client, message: WAWebJS.Message, step = false
 
                         if (!["buttons_response", "list_response"].includes(messageType) || !idOptions.includes(text.id) || !titleOptions.includes(text.title)) {
                             temp.step = searchIndex(questionData, previousData.question_id);
+                            temp.answer = false;
 
+                            console.log(temp.step);
                             await textHandling(client, chatId);
                             await cache(chatId, true, temp.level, temp.step, temp.answer, answer, temp.previousData, temp.dateOfBirth, temp.name, temp.postalCodeId, temp.gender, temp.answerDetailId, temp.projectId, temp.email, temp.city, temp.urbanVillage, temp.province, temp.districts, temp.address, temp.userId, temp.messageId, temp.postalCode, temp.provinceData, temp.cityData, temp.districtsData, temp.urbanVillageData);
-                            return bot(client, message, true);
+                            return;
                         }
 
                         break;
