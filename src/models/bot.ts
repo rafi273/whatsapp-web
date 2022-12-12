@@ -68,7 +68,7 @@ export async function bot(client: Client, message: WAWebJS.Message, step = false
         }
 
         if (!chatQuestionTrigger) {
-            await sendMultipleMessage(client, chatId, endMessage(`${typeof text == "object" ? text.title : text} tidak ditemukan`));
+            sendMultipleMessage(client, chatId, endMessage(`${typeof text == "object" ? text.title : text} tidak ditemukan`));
             return;
         }
 
