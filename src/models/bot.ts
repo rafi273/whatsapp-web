@@ -276,6 +276,40 @@ export async function bot(client: Client, message: WAWebJS.Message, step = false
                         temp.urbanVillageData = urbanVillageData;
                     }
                 }
+
+                if (questionExecutionPrevious.includes("search city in cerelac")) {
+                    switch (temp.province) {
+                        case "DKI Jakarta":
+                            temp.cityData = ["Kota Jakarta Barat", "Kota Jakarta Pusat", "Kota Jakarta Selatan", "Kota Jakarta Timur", "Kota Jakarta Utara"];
+
+                            break;
+
+                        case "Banten":
+                            temp.cityData = ["Kota Tangerang", "Kota Tangerang Selatan"];
+
+                            break;
+
+                        case "Jawa Barat":
+                            temp.cityData = ["Kota Depok", "Kota Bekasi", "Kota Bogor", "Kota Bandung", "Kabupaten Bandung", "Kabupaten Bandung Barat", "Kota Cirebon", "Kabupaten Cirebon", "Kota Cimahi", "Kota Tasikmalaya"];
+
+                            break;
+
+                        case "Jawa Tengah":
+                            temp.cityData = ["Kota Semarang", "Kota Tegal", "Kabupaten Banyumas"];
+
+                            break;
+
+                        case "DI Yogyakarta":
+                            temp.cityData = ["Kota Yogyakarta"];
+
+                            break;
+
+                        case "Jawa Timur":
+                            temp.cityData = ["Kota Surabaya", "Kota Malang", "Kabupaten Sidoarjo"];
+
+                            break;
+                    }
+                }
             }
 
             const questionRedirect = questionData[temp.step].question_redirect;
